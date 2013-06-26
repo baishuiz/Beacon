@@ -1,0 +1,28 @@
+// 全局事件侦听
+beacon.on(eventType, eventHandle [, options]);
+
+
+// 事件广播
+beacon.on(eventType [,dataObject]);
+
+
+// 为制定指定对象绑定事件
+beacon(targetObject).on(eventType, eventHandle [,options]);
+
+
+// 触发指定对象的事件
+beacon(targetObject).on(eventType [,dataObject]);
+
+
+// 移除事件侦听
+// ToDo: 应该有一个参数控制 是否严格匹配 eventHandle 引用
+beacon.off(targetObject).off([eventType] [, eventHandle]);
+
+
+//从host中移除引用
+beacon.logout();
+
+
+
+//作为host方法引用
+beacon.login();
