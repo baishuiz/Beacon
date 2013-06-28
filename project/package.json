@@ -1,0 +1,23 @@
+{
+  "name": "beacon",
+  "version": "0.0.1",
+  "description": "base event proxy",
+  "main": "beacon.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/baishuiz/Beacon.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "event"
+  ],
+  "author": "baishuiz@gmail.com",
+  "license": "BSD",
+  "devDependencies": {
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt": "~0.4.1"
+  }
+}
