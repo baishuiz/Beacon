@@ -33,8 +33,7 @@
             options = options ? _base.merge(_options,options): _options;
             attrSource = [].concat(attrSource);
             var sourceLength = attrSource.length ;
-
-            for (var index = 1; index < sourceLength; index++) {
+            for (var index = 0; index < sourceLength; index++) {
                 var sourceObj = attrSource[index];
                 for (var item in sourceObj) {
                     var rule1 = options.mergePrototype || sourceObj.hasOwnProperty(item);
@@ -138,7 +137,7 @@
           var _enum = {};
           for (var i = 0; i < arguments.length; i++) {
             _enum[arguments[i]] = arguments[i];
-        }
+          }
           return _enum;
         }
     };

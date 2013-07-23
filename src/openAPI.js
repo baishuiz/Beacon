@@ -8,24 +8,24 @@
         * @param {Object} eventName   [事件名]
         * @param {*} option [事件句柄 或 事件处理参数]
         */
-        on : function(){
+        on : (function(){
                 var hostProxy = {};
                 var base = beacon.base;
                 var isType = base.isType;
                 var publicDispatchEvent = base.Event.publicDispatchEvent;
-                var addEventListener = base.Event.addEventListener;
+                var addEventListener = base.Event.attachEvent;
                 
                 var _on = function(eventName,option){
                     var args = [].slice.call(arguments,0);
                     if (option && isType(option, 'Function')) {
-                        args.unshift(hostProxy);
+                        //args.unshift(hostProxy);
                         addEventListener.apply(hostProxy,args);
                     } else {
                         publicDispatchEvent.apply(hostProxy,args);
                     }   
                 };
                 return _on;         
-        }(beacon)
+        }(beacon))
         
         , blend:base.blend
         , NS : base.NS
@@ -35,6 +35,7 @@
         , Enum : base.Enum
         ,loginGlobal  : base.login
         ,logoffGlobal : base.logoff 
+        ,combinationalEvent : base.combinationalEvent
         
     },
     
@@ -109,7 +110,7 @@
             }); 
        }
    };
-    base.merge(base.avatarCore, avatarAPI);
-    base.merge(beacon, openAPI);
+    base.blend(base.avatarCore, avatarAPI);
+    base.blend(beacon, openAPI);
     base.init();
 })(beacon);

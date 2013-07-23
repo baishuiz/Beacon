@@ -9,6 +9,9 @@
 
     // 苗正根红的 beacon， core.init之后吸收影分身正式踏入战场。
     var beacon = function (obj) {
+        if(this !== global){
+            beacon.blend(this,beacon); // 是使被扩展方法能够通过call 或 apply 进行继承
+        }
         return new Avatar(obj);
     };
     
@@ -22,8 +25,8 @@
         init: function () {
             var freeze = Object.freeze;
             global.beacon = beacon;
-            core.merge(beacon.prototype, preBeacon);
-            freeze && freeze(beacon.prototype); 
+            core.merge(beacon, preBeacon);
+            freeze && freeze(beacon); 
             delete global.beacon.base; // 保护内核，杜绝外部访问
         },
         login:function(){
