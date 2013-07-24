@@ -70,6 +70,106 @@ describe("Beacon", function () {
            beacon.on(INTEGRANT_EVENT_FIRST);
            expect(testResult).toEqual(2);
         });        
+        
+        
+        describe("移除普通事件侦听", function(){
+            it("当同时指定事件名及事件句柄时", function(){
+                var result = 0;
+                var CUSTOM_EVENT =new String("cusotm event");
+                
+                function customEventHandle(){
+                    result++;
+                }
+                beacon.on(CUSTOM_EVENT, customEventHandle);
+                beacon.on(CUSTOM_EVENT);
+                expect(result).toEqual(1);
+                beacon.on(CUSTOM_EVENT);
+                expect(result).toEqual(2);
+                beacon.off(CUSTOM_EVENT, customEventHandle);
+                beacon.on(CUSTOM_EVENT);
+                expect(result).toEqual(2);
+            });
+            
+            it("移除指定事件名下所有处理句柄", function(){
+                var result = {
+                    a:0,
+                    b:10
+                };
+                var CUSTOM_EVENT =new String("cusotm event");
+                
+                function customEventHandleA(){
+                    result.a+=1;
+                }
+                
+                function customEventHandleB(){
+                    result.b+=1;
+                }
+                
+                beacon.on(CUSTOM_EVENT, customEventHandleA);
+                beacon.on(CUSTOM_EVENT, customEventHandleB);
+
+                
+                beacon.on(CUSTOM_EVENT);
+                expect(result.a).toEqual(1);
+                expect(result.b).toEqual(11);
+                
+                beacon.on(CUSTOM_EVENT);
+                expect(result.a).toEqual(2);
+                expect(result.b).toEqual(12);
+                
+                beacon.off(CUSTOM_EVENT);
+                
+                beacon.on(CUSTOM_EVENT);
+                expect(result.a).toEqual(2);
+                expect(result.b).toEqual(12);
+            });
+            
+            
+            
+            
+            it("清空全局自定义事件", function(){
+                var result = {
+                    a:0,
+                    b:10
+                };
+                var CUSTOM_EVENT_A =new String("cusotm event A");
+                var CUSTOM_EVENT_B =new String("cusotm event B");
+                
+                function customEventHandleA(){
+                    result.a+=1;
+                }
+                
+                function customEventHandleB(){
+                    result.b+=1;
+                }
+                
+                beacon.on(CUSTOM_EVENT_A, customEventHandleA);
+                beacon.on(CUSTOM_EVENT_B, customEventHandleB);
+
+                
+                beacon.on(CUSTOM_EVENT_A);
+                expect(result.a).toEqual(1);
+                expect(result.b).toEqual(10);
+                
+                beacon.on(CUSTOM_EVENT_B);
+                expect(result.a).toEqual(1);
+                expect(result.b).toEqual(11);
+                
+                beacon.on(CUSTOM_EVENT_B);
+                beacon.on(CUSTOM_EVENT_A);
+                expect(result.a).toEqual(2);
+                expect(result.b).toEqual(12);
+                
+                
+                beacon.off();
+                
+                beacon.on(CUSTOM_EVENT_A);
+                beacon.on(CUSTOM_EVENT_B);
+                expect(result.a).toEqual(2);
+                expect(result.b).toEqual(12);
+            });
+            
+        });
     });
     
     

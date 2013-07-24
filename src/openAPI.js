@@ -9,9 +9,10 @@
         * @param {*} option [事件句柄 或 事件处理参数]
         */
         on : (function(){
-                var hostProxy = {};
+                
                 var base = beacon.base;
                 var isType = base.isType;
+                var hostProxy = base.Event.hostProxy;
                 var publicDispatchEvent = base.Event.publicDispatchEvent;
                 var addEventListener = base.Event.attachEvent;
                 
@@ -26,6 +27,17 @@
                 };
                 return _on;         
         }(beacon))
+        
+        , off : (function(){
+            var base = beacon.base;
+            var hostProxy = base.Event.hostProxy;
+            var _off = function(eventName, eventHandle){
+                    var args = [].slice.call(arguments,0);
+                    base.Event.removeEvent.apply(hostProxy,args);
+                    
+                };
+                return _off;
+        }())
         
         , blend:base.blend
         , NS : base.NS

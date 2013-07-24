@@ -120,6 +120,7 @@
        
        //ToDO： 增加一个可选参数进行深度each
        each : function(array,fn){
+            if(!array) return;
             array = [].concat(array);
             for (var i = array.length - 1; i >= 0; i--) {
                 fn.call(array[i],i,array[i]);

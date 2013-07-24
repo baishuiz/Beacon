@@ -11,7 +11,9 @@
     var targetList = [];
     
     var event = {
-        attachEvent : function(eventName,eventHandle) {
+       hostProxy : {}
+       
+       ,attachEvent : function(eventName,eventHandle) {
             var eventId = registTarget(this);
             if(eventName instanceof base.combinationalEvent) {
                 registCombinationinlEvent(eventId, eventName, eventHandle);
@@ -44,6 +46,13 @@
                 event.fireEvent.call(targetList[i], eventName, eventBody);
             });
        }
+       
+       
+       ,removeEvent: function(eventName,eventHandle){
+           var target = this;
+           var targetIndex = getTargetIndex(targetList,target);
+           removeEvent(targetIndex, eventName, eventHandle);
+       }       
     };
     
     var Event = (function(){
@@ -114,6 +123,40 @@
         base.each(eventList,function(index){
             registEvent(targetId, eventList[index], handleProxy);
         });
+    }
+    
+    
+    
+    function removeEvent(eventId, eventName, eventHandle) {
+        var indexOf = base.arrayIndexOf;
+        if(!eventList[eventId]) {
+          return null;
+        } 
+        
+        if(!eventName && !eventHandle) {
+            eventList[eventId] = [];
+            return true
+        }
+        
+        var events = eventList[eventId];
+        var handleList;
+        for(var i=0; i<events.length; i++) {
+            if(events[i].name === eventName ) {
+                handleList = events[i].fn;        
+                break;
+            }
+        }
+        
+        
+        if(eventHandle){
+            for(var i=handleList.length;i>=0;i--){
+                if(handleList[i] === eventHandle){
+                    handleList.splice(i,1);
+                }
+            }
+        } else {
+            handleList.splice(0);
+        }
     }
 
     base.Event = Event;
