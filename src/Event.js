@@ -107,7 +107,7 @@
                 
                 if(eventList.length===0){
                     eventHandle.call(target,eventBody);
-                    event.resetEventList();
+                    eventList = event.resetEventList();
                 }
         };
         

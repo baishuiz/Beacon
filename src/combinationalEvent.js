@@ -4,14 +4,15 @@
         if(this instanceof CombinationalEvent) {
             return this;
         }
-        events = [].slice.call(arguments,0);
-        var args = events.slice();
         
+        var events = [].slice.call(arguments,0);
         var fn = function(){
-            this.eventList = args;
-            this.resetEventList = function(){
-                events.slice();
+            function  resetEventList(){
+                return events.slice(0);
             }
+            
+            this.resetEventList = resetEventList;
+            this.eventList = resetEventList();
         }
         fn.prototype = new CombinationalEvent;
         

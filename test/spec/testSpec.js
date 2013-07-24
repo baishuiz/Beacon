@@ -55,16 +55,20 @@ describe("Beacon", function () {
            var INTEGRANT_EVENT_FIRST  = new String("integrant event first");
            var INTEGRANT_EVENT_SECEND = new String("integrant event secend");
            var COMBINATIOINAL_EVENT   = beacon.combinationalEvent(INTEGRANT_EVENT_FIRST, INTEGRANT_EVENT_SECEND);
-           var testResult = false;
+           var testResult = 0;
            beacon.on(COMBINATIOINAL_EVENT, function(){
-              testResult = true;   
+              testResult++;   
            }); 
            
-           expect(testResult).toEqual(false);
+           expect(testResult).toEqual(0);
            beacon.on(INTEGRANT_EVENT_FIRST);
-           expect(testResult).toEqual(false);
+           expect(testResult).toEqual(0);
            beacon.on(INTEGRANT_EVENT_SECEND);
-           expect(testResult).toEqual(true);
+           expect(testResult).toEqual(1);
+           beacon.on(INTEGRANT_EVENT_SECEND);
+           expect(testResult).toEqual(1);
+           beacon.on(INTEGRANT_EVENT_FIRST);
+           expect(testResult).toEqual(2);
         });        
     });
     
