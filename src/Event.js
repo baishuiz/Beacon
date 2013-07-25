@@ -51,7 +51,14 @@
        ,removeEvent: function(eventName,eventHandle){
            var target = this;
            var targetIndex = getTargetIndex(targetList,target);
-           removeEvent(targetIndex, eventName, eventHandle);
+           
+           if(eventName instanceof base.combinationalEvent) {
+               removeCombinationinlEvent(targetIndex, eventName, eventHandle);
+           } else {
+               removeEvent(targetIndex, eventName, eventHandle);
+           }
+           
+           
        }       
     };
     
@@ -80,7 +87,7 @@
     function registEvent(eventId, eventName, eventHandle) {
         var indexOf = base.arrayIndexOf;
         
-        if(!eventList[eventId]) {
+        if(!eventList[eventId] || eventList[eventId].length<=0) {
           eventList[eventId] = [{
             name:eventName
            ,fn  :[]
@@ -120,6 +127,8 @@
                 }
         };
         
+        
+        event.attachHandleProxy(eventHandle, handleProxy);
         base.each(eventList,function(index){
             registEvent(targetId, eventList[index], handleProxy);
         });
@@ -157,6 +166,36 @@
         } else {
             handleList.splice(0);
         }
+    }
+    
+    
+    
+    function removeCombinationinlEvent(targetId, eventName, eventHandle) {
+        var handleProxy = [].concat(eventName.getHandleProxy(eventHandle));
+        
+        base.each(handleProxy, function(){
+            var handleProxy = this;
+            base.each(eventName.eventList, function(index) {
+                var eventName = this;
+                removeEvent(targetId, eventName, handleProxy);    
+            });
+        });    
+            
+                
+            
+        
+    }
+    
+    function getEventList(targetId, eventName) {
+        var events = eventList[targetId];
+        var handleList;
+        for(var i=0; i<events.length; i++) {
+            if(events[i].name === eventName ) {
+                handleList = events[i].fn;        
+                break;
+            }
+        }
+        return handleList;
     }
 
     base.Event = Event;

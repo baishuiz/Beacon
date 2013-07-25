@@ -170,6 +170,130 @@ describe("Beacon", function () {
             });
             
         });
+        
+        describe("移除复合事件", function(){
+            it("指定事件句柄", function(){
+                var INTEGRANT_EVENT_FIRST  = new String("integrant event first");
+                var INTEGRANT_EVENT_SECEND = new String("integrant event secend");
+                var COMBINATIOINAL_EVENT   = beacon.combinationalEvent(INTEGRANT_EVENT_FIRST, INTEGRANT_EVENT_SECEND);
+                var testResult = 0;
+                var eventHandle = function(){
+                  testResult++;   
+                };
+                
+                beacon.on(COMBINATIOINAL_EVENT, eventHandle); 
+                
+                expect(testResult).toEqual(0);
+                
+                beacon.on(INTEGRANT_EVENT_FIRST);
+                expect(testResult).toEqual(0);
+                
+                beacon.on(INTEGRANT_EVENT_SECEND);
+                expect(testResult).toEqual(1);
+                
+                beacon.on(INTEGRANT_EVENT_SECEND);
+                expect(testResult).toEqual(1);
+                
+                beacon.on(INTEGRANT_EVENT_FIRST);
+                expect(testResult).toEqual(2);
+                
+                beacon.off(COMBINATIOINAL_EVENT, eventHandle);
+                
+                beacon.on(INTEGRANT_EVENT_SECEND);
+                beacon.on(INTEGRANT_EVENT_FIRST);
+                expect(testResult).toEqual(2);
+
+            });
+            
+            
+            it("清除指定事件下的所有句柄", function(){
+                var INTEGRANT_EVENT_FIRST  = new String("integrant event first");
+                var INTEGRANT_EVENT_SECEND = new String("integrant event secend");
+                var COMBINATIOINAL_EVENT   = beacon.combinationalEvent(INTEGRANT_EVENT_FIRST, INTEGRANT_EVENT_SECEND);
+                var testResult = {
+                    a:1,b:100
+                };
+                var eventHandleA = function(){
+                  testResult.a++;   
+                };
+                
+                var eventHandleB = function(){
+                  testResult.b++;   
+                };                
+                
+                beacon.on(COMBINATIOINAL_EVENT, eventHandleA); 
+                
+                expect(testResult.a).toEqual(1);
+                expect(testResult.b).toEqual(100);
+                
+                beacon.on(INTEGRANT_EVENT_FIRST);
+                expect(testResult.a).toEqual(1);
+                expect(testResult.b).toEqual(100);
+                
+                beacon.on(INTEGRANT_EVENT_SECEND);
+                expect(testResult.a).toEqual(2);
+                expect(testResult.b).toEqual(100);
+                
+                
+                beacon.on(COMBINATIOINAL_EVENT, eventHandleB); 
+                
+                beacon.on(INTEGRANT_EVENT_SECEND);
+                expect(testResult.a).toEqual(2);
+                expect(testResult.b).toEqual(100);
+                
+                beacon.on(INTEGRANT_EVENT_FIRST);
+                expect(testResult.a).toEqual(3);
+                expect(testResult.b).toEqual(101);
+                
+                beacon.on(INTEGRANT_EVENT_SECEND);
+                beacon.on(INTEGRANT_EVENT_FIRST);
+                expect(testResult.a).toEqual(4);
+                expect(testResult.b).toEqual(102);                
+                
+                
+                beacon.off(COMBINATIOINAL_EVENT);
+                
+                beacon.on(INTEGRANT_EVENT_SECEND);
+                beacon.on(INTEGRANT_EVENT_FIRST);
+                expect(testResult.a).toEqual(4);
+                expect(testResult.b).toEqual(102);                
+            });
+            
+            
+            
+            it("清空所有事件", function(){
+                var INTEGRANT_EVENT_FIRST  = new String("integrant event first");
+                var INTEGRANT_EVENT_SECEND = new String("integrant event secend");
+                var COMBINATIOINAL_EVENT   = beacon.combinationalEvent(INTEGRANT_EVENT_FIRST, INTEGRANT_EVENT_SECEND);
+                var testResult = 0;
+                var eventHandle = function(){
+                  testResult++;   
+                };
+                
+                beacon.on(COMBINATIOINAL_EVENT, eventHandle); 
+                
+                expect(testResult).toEqual(0);
+                
+                beacon.on(INTEGRANT_EVENT_FIRST);
+                expect(testResult).toEqual(0);
+                
+                beacon.on(INTEGRANT_EVENT_SECEND);
+                expect(testResult).toEqual(1);
+                
+                beacon.on(INTEGRANT_EVENT_SECEND);
+                expect(testResult).toEqual(1);
+                
+                beacon.on(INTEGRANT_EVENT_FIRST);
+                expect(testResult).toEqual(2);
+                
+                beacon.off();
+                
+                beacon.on(INTEGRANT_EVENT_SECEND);
+                beacon.on(INTEGRANT_EVENT_FIRST);
+                expect(testResult).toEqual(2);
+
+            });
+        });
     });
     
     
