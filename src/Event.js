@@ -33,8 +33,8 @@
                     break;
                 }
             }
-            base.each(eventHandles,function(i){
-                eventObject = {
+            base.each(eventHandles, function(i){
+                var eventObject = {
                     eventType:eventName
                 };
                 eventHandles[i].call(target,eventObject, eventBody);
@@ -158,9 +158,9 @@
         
         
         if(eventHandle){
-            for(var i=handleList.length;i>=0;i--){
-                if(handleList[i] === eventHandle){
-                    handleList.splice(i,1);
+            for(var handleIndex = handleList.length; handleIndex >=0; handleIndex--){
+                if(handleList[handleIndex] === eventHandle){
+                    handleList.splice(handleIndex,1);
                 }
             }
         } else {
@@ -180,10 +180,6 @@
                 removeEvent(targetId, eventName, handleProxy);    
             });
         });    
-            
-                
-            
-        
     }
     
     function getEventList(targetId, eventName) {
