@@ -13,13 +13,13 @@
     var event = {
        hostProxy : {}
        
-       ,attachEvent : function(eventName,eventHandle) {
+       ,attachEvent : function(eventName, eventHandle) {
             var eventId = registTarget(this);
-            if(eventName instanceof base.combinationalEvent) {
-                registCombinationinlEvent(eventId, eventName, eventHandle);
-            } else {
-                registEvent(eventId, eventName, eventHandle);
-            }
+            var regEvent = (eventName instanceof base.combinationalEvent) ? 
+                               registCombinationinlEvent :
+                                   registEvent;
+                                   
+            regEvent(eventId, eventName, eventHandle);
         }
         
        ,fireEvent : function(eventName, eventBody){
