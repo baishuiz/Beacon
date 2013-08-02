@@ -3,8 +3,9 @@
 ## c9.io
 #################
 
-.c9revisions
-.gitignore
+*.c9revisions
+*.gitignore
+*.gitattributes
 
 #################
 ## Eclipse
