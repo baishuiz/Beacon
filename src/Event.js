@@ -113,23 +113,9 @@
     
     
     function registCombinationinlEvent(targetId, event, eventHandle){
-        var eventList = event.eventList;
-        var handleProxy = function(eventObject, eventBody){
-                var target = this;
-                var eventIndex = base.arrayIndexOf(eventList,eventObject.eventType);
-                if(eventIndex>=0){
-                    eventList.splice(eventIndex, 1);
-                }
-                
-                if(eventList.length===0){
-                    eventHandle.call(target,eventBody);
-                    eventList = event.resetEventList();
-                }
-        };
-        
-        
-        event.attachHandleProxy(eventHandle, handleProxy);
-        base.each(eventList,function(index){
+        var handleProxy = event.registEvent(eventHandle);
+        var eventList = event.getEventList();
+        base.each(eventList, function(index){
             registEvent(targetId, eventList[index], handleProxy);
         });
     }
@@ -137,7 +123,6 @@
     
     
     function removeEvent(eventId, eventName, eventHandle) {
-        var indexOf = base.arrayIndexOf;
         if(!eventList[eventId]) {
           return null;
         } 
@@ -170,13 +155,13 @@
     
     
     
-    function removeCombinationinlEvent(targetId, eventName, eventHandle) {
-        var handleProxy = [].concat(eventName.getHandleProxy(eventHandle));
-        
-        base.each(handleProxy, function(){
-            var handleProxy = this;
-            base.each(eventName.eventList, function(index) {
-                var eventName = this;
+    function removeCombinationinlEvent(targetId, event, eventHandle) {
+        var handleProxyList = event.removeEvent(eventHandle);
+        base.each(handleProxyList, function(i){
+            var handleProxy = handleProxyList[i];
+            var eventList = event.getEventList();
+            base.each(eventList, function(index) {
+                var eventName = eventList[index];
                 removeEvent(targetId, eventName, handleProxy);    
             });
         });    

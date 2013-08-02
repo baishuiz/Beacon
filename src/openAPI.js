@@ -4,7 +4,7 @@
         
         /**
         * @name beacon.on
-        * @class [quanju全局事件监听及广播]
+        * @class [全局事件监听及广播]
         * @param {Object} eventName   [事件名]
         * @param {*} option [事件句柄 或 事件处理参数]
         */
@@ -47,7 +47,16 @@
         , Enum : base.Enum
         ,loginGlobal  : base.login
         ,logoffGlobal : base.logoff 
-        ,combinationalEvent : base.combinationalEvent
+        ,createEvent : function(){
+            var args = [].slice.call(arguments,0);
+            var event;
+            if(arguments.length>1){
+                event = base.combinationalEvent.apply(this, args)    ;
+            } else {
+                event = {desc:args[0]};
+            }
+            return event;
+        }
         
     },
     
@@ -65,31 +74,22 @@
        * beacon("body").on("load",function(){console.info("i am ready");},{});
        * 结果：在onload时间后 输出 i am ready
        */
-       on: function (eventType, eventHandle, option) {
-
-
+       on: function (eventType, option) {
+         var args = [].slice.call(arguments,0);
          var target = this.target
             , base = beacon.base
-            ,isHTML = base.DOM.isHTMLElement
-            ,hasEvent = base.DOM.supportEvent
-            , isDomEvent = isHTML(target) && hasEvent(target,eventType)
-            , addEventListener = isDomEvent ?
-                                    base.DOM.event.addEventListener :
-                                        base.event.addEventListener
-                                   
-            , dispatchEvent = isDomEvent ?
-                                base.BOM.event.dispatchEvent :
-                                    base.event.dispatchEvent;
-
             
-         if (arguments.length==1){
+         var dispatchEvent = base.Event.fireEvent;
+         var addEventListener = base.Event.attachEvent;    
+         
+         if(option && base.isType(option, 'Function')){
             base.each(target,function(i,target){
-                dispatchEvent(target, eventType); 
-            });                     
-         }else {
-            base.each(target,function(i,target){
-                addEventListener(target, eventType, eventHandle, option); 
-            });                                     
+                addEventListener.apply(target, args); 
+            }); 
+         } else {
+             base.each(target,function(i,target){
+                dispatchEvent.apply(target, args); 
+            }); 
          }
        }, 
        
@@ -108,17 +108,12 @@
        * beacon("body").off("load",fn,{});
        */
        off: function (eventType, eventHandle, option) {
-           if(arguments.length<=0){return}
+           //if(arguments.length<=0){return}
            var target = this.target
-               ,isHTML = base.DOM.isHTMLElement
-               ,hasEvent = base.DOM.supportEvent
-               ,isDomEvent = isHTML(target) && hasEvent(target,eventType)
-               ,removeEventListener = isDomEvent ?
-                                           base.DOM.event.removeEventListener :
-                                               base.event.removeEventListener;
+               ,removeEventListener = base.Event.removeEvent;
 
             base.each(target,function(i,target){
-                removeEventListener(target, eventType, eventHandle, option);
+                removeEventListener.call(target, eventType, eventHandle, option);
             }); 
        }
    };
