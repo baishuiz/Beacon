@@ -78,9 +78,16 @@
          var args = [].slice.call(arguments,0);
          var target = this.target
             , base = beacon.base
-            
-         var dispatchEvent = base.Event.fireEvent;
-         var addEventListener = base.Event.attachEvent;    
+        
+         var isHTMLElement = base.DOMEvent.isHTMLElement(target);
+         var isEventSupported = base.DOMEvent.isEventSupported(target, eventType);
+         var dispatchEvent = isHTMLElement && isEventSupported ?
+                                 base.DOMEvent.fireEvent :
+                                 base.Event.fireEvent;
+                                 
+         var addEventListener = isHTMLElement && isEventSupported ? 
+                                    base.DOMEvent.attachEvent :
+                                    base.Event.attachEvent;    
          
          if(option && base.isType(option, 'Function')){
             base.each(target,function(i,target){
@@ -109,11 +116,18 @@
        */
        off: function (eventType, eventHandle, option) {
            //if(arguments.length<=0){return}
-           var target = this.target
-               ,removeEventListener = base.Event.removeEvent;
-
+           var target = this.target;
+           var isHTMLElement = base.DOMEvent.isHTMLElement(target);
+           var isDomEvent = eventType && base.DOMEvent.isEventSupported(target, eventType);
+           
+           var removeEventListener = isHTMLElement && isDomEvent ? 
+                                         base.DOMEvent.removeEvent :
+                                            base.Event.removeEvent;  
+                                    
             base.each(target,function(i,target){
-                removeEventListener.call(target, eventType, eventHandle, option);
+                //removeEventListener.call(target, eventType, eventHandle, option);
+                isHTMLElement && base.DOMEvent.removeEvent.call(target, eventType, eventHandle, option);
+                base.Event.removeEvent.call(target, eventType, eventHandle, option);
             }); 
        }
    };

@@ -320,5 +320,121 @@ describe("Beacon", function () {
             });
       
         });
+        
+        describe("DOM事件", function(){
+            describe("HTML 元素默认事件", function() {
+                it("绑定事件", function() {
+                    var result = 100;
+                    var div = document.createElement("div");
+                    beacon(div).on("click", function(){
+                        result += 100;
+                    });
+                    
+                    beacon(div).on("click");
+                    expect(result).toEqual(200);
+                    beacon(div).on("click");
+                    expect(result).toEqual(300);
+                    
+                    beacon(div).on("click", function(){
+                        result += 1;
+                    });
+                    beacon(div).on("click");
+                    expect(result).toEqual(401);
+                });
+                
+                
+                describe("移除事件", function() {
+                    it("指定handle", function(){
+                        var result = 100;
+                        var div = document.createElement("div");
+                        var eventHandleA = function(){
+                            result += 100;
+                        };
+                        
+                        var eventHandleB = function(){
+                            result += 1;
+                        }
+                        
+                        beacon(div).on("click", eventHandleA);
+                        beacon(div).on("click", eventHandleB);
+                        
+                        beacon(div).on("click");
+                        expect(result).toEqual(201);
+                        
+                        beacon(div).off("click", eventHandleA);
+                        beacon(div).on("click");
+                        expect(result).toEqual(202);    
+                    });
+                    
+                    it("指定eventName， 不指定handle", function(){
+                        var result = 100;
+                        var div = document.createElement("div");
+                        var eventHandleA = function(){
+                            result += 100;
+                        };
+                        
+                        var eventHandleB = function(){
+                            result += 1;
+                        }
+                        
+                        beacon(div).on("click", eventHandleA);
+                        beacon(div).on("click", eventHandleB);
+                        
+                        beacon(div).on("click");
+                        expect(result).toEqual(201);
+                        
+                        beacon(div).off("click");
+                        beacon(div).on("click");
+                        expect(result).toEqual(201);    
+                    });
+                    
+                    it("清空全部事件", function(){
+                        var result = 100;
+                        var div = document.createElement("div");
+                        var eventHandleA = function(){
+                            result += 100;
+                        };
+                        
+                        var eventHandleB = function(){
+                            result += 1;
+                        }
+                        
+                        var eventHandleC = function(){
+                            result += 10;
+                        }
+                        
+                        beacon(div).on("click", eventHandleA);
+                        beacon(div).on("click", eventHandleB);
+                        beacon(div).on("dblclick", eventHandleC);
+                        
+                        beacon(div).on("click");
+                        expect(result).toEqual(201);
+                        
+                        beacon(div).on("dblclick");
+                        expect(result).toEqual(211);
+                        
+                        beacon(div).off();
+                        beacon(div).on("dblclick");
+                        beacon(div).on("click");
+                        expect(result).toEqual(211);    
+                    });                    
+                    
+                });
+            });
+            
+            describe("window 默认事件", function() {
+                it("绑定事件", function() {
+                    var result = 0;
+                    document.body.style.height = "2000px";
+                    beacon(window).on("scroll", function(){
+                        result += 100;
+                    });
+                    
+                    beacon(window).on("scroll")
+                    expect(result).toEqual(100);
+                });
+            });
+        });
+    
     });
 });

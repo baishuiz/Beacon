@@ -313,4 +313,5 @@ describe("Beacon", function () {
     
     
     
+    
 });
