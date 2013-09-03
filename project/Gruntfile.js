@@ -29,7 +29,7 @@ module.exports = function(grunt){
               src: '../dist/<%= output.minFileName %>',
               options: {
                 specs: '../test/spec/*Spec.js',
-                keepRunner:false
+                keepRunner:true
               }
             }            
         }

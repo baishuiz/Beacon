@@ -175,14 +175,6 @@
                 var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3 | 0x8);
                 return v.toString(16);
             }).toUpperCase();
-        },
-
-        enum : function() {
-          var _enum = {};
-          for (var i = 0; i < arguments.length; i++) {
-            _enum[arguments[i]] = arguments[i];
-          }
-          return _enum;
         }
     };
     _base.blend(base, _base);
@@ -404,11 +396,14 @@
         if(eventHandle){
             for(var handleIndex = handleList.length; handleIndex >=0; handleIndex--){
                 if(handleList[handleIndex] === eventHandle){
-                    handleList.splice(handleIndex,1);
+                    //handleList.splice(handleIndex,1);
+                    events[i].fn.splice(handleIndex,1);
                 }
             }
         } else {
-            handleList.splice(0);
+            //handleList.splice(0);
+            ///events[i].fn.splice(0);
+            events[i].fn = [];
         }
     }
     
@@ -549,6 +544,9 @@
             var dispatchEvent = function(eventType, option) {
                     var dom = this;
                     option = option || {bubbles:false,cancelable:false};
+                    option.ieHack = dom.all && dom.all.toString(); // 规避 IE 异常，当 dom 不在DOM树时，IE9下 fireEVent会抛出异常；此处采用赋值操作以避免js压缩时清除冗余语句；
+                    option.ieHack = dom.style; // 规避 IE 异常，当 dom 不在DOM树时，IE9下 fireEVent 不会触发事件；此处采用赋值操作以避免js压缩时清除冗余语句；
+                
                     var evt = document.createEvent("Event");
                     evt.initEvent(eventType, option.bubbles, option.cancelable);
                     dom.dispatchEvent(evt);
@@ -558,6 +556,7 @@
                 var dom = this;
                 option = option || {bubbles:false,cancelable:false};
                 option.ieHack = dom.all && dom.all.toString(); // 规避 IE 异常，当 dom 不在DOM树时，IE7下 fireEVent会抛出异常；此处采用赋值操作以避免js压缩时清除冗余语句；
+                option.ieHack = dom.style; // 规避 IE 异常，当 dom 不在DOM树时，IE8下 fireEVent 不会触发事件；此处采用赋值操作以避免js压缩时清除冗余语句；
                 
                 eventType = 'on' + eventType;
                 var evt = document.createEventObject();

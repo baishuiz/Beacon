@@ -132,14 +132,6 @@
                 var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3 | 0x8);
                 return v.toString(16);
             }).toUpperCase();
-        },
-
-        enum : function() {
-          var _enum = {};
-          for (var i = 0; i < arguments.length; i++) {
-            _enum[arguments[i]] = arguments[i];
-          }
-          return _enum;
         }
     };
     _base.blend(base, _base);

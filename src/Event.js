@@ -145,11 +145,14 @@
         if(eventHandle){
             for(var handleIndex = handleList.length; handleIndex >=0; handleIndex--){
                 if(handleList[handleIndex] === eventHandle){
-                    handleList.splice(handleIndex,1);
+                    //handleList.splice(handleIndex,1); //IE8 下 splice 没有按照引用方式处理数组
+                    events[i].fn.splice(handleIndex,1);
                 }
             }
         } else {
-            handleList.splice(0);
+            //handleList.splice(0);
+            ///events[i].fn.splice(0); //IE8 下 对象属性 的splice 没有效果
+            events[i].fn = [];
         }
     }
     
