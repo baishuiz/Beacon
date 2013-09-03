@@ -151,7 +151,7 @@
             }
         } else {
             //handleList.splice(0);
-            ///events[i].fn.splice(0); //IE8 下 对象属性 的splice 没有效果
+            ///events[i].fn.splice(0); //IE8 下 对象属性 的splice 没有效果.
             events[i].fn = [];
         }
     }
