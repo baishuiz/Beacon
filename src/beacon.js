@@ -26,8 +26,8 @@
             var freeze = Object.freeze;
             global.beacon = beacon;
             core.merge(beacon, preBeacon);
-            freeze && freeze(beacon); 
             delete global.beacon.base; // 保护内核，杜绝外部访问
+            freeze && freeze(beacon); 
         },
         login:function(){
             global.beacon = beacon;
