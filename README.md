@@ -3,16 +3,17 @@ Beacon
 
 轻量级事件类库
 
-### 侦听事件
-        var eventStr = "简单事件字符串";
-        beacon.on(eventStr, function(){
-            console.log("事件已触发");
-        });
+### 事件
+    事件对象可分为如下几种类型:  
+    * 字符串  
+        var event = "简单事件字符串";
+    * 普通事件对象      
+        var event = beacon.createEvent("General Event");
         
-        var target = {msg: 200};
-        beacon(target).on(eventStr, function(){
-            console.log("触发指定对象事件");
-        });
+    * 复合事件对象      
+        var eventA = beacon.createEvent("General Event A");
+        var eventB = beacon.createEvent("General Event B");
+        var ComEvent = beacon.createEvent(eventA, eventB);
         
 ### 触发指定对象事件
         beacon(target).on("简单事件字符串");
