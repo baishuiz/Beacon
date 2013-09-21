@@ -1,4 +1,3 @@
-
 /*
  * @module  EventDispatcher
  * MIT Licensed
@@ -57,8 +56,6 @@
            } else {
                removeEvent(targetIndex, eventName, eventHandle);
            }
-           
-           
        }       
     };
     

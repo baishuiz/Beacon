@@ -107,7 +107,7 @@
             var dom = this;
             var dispatchEvent = function(eventType, option) {
                     var dom = this;
-                    option = option || {bubbles:false,cancelable:false};
+                    option = option || {bubbles:true,cancelable:true};
                     option.ieHack = dom.all && dom.all.toString(); // 规避 IE 异常，当 dom 不在DOM树时，IE9下 fireEVent会抛出异常；此处采用赋值操作以避免js压缩时清除冗余语句；
                     option.ieHack = dom.style; // 规避 IE 异常，当 dom 不在DOM树时，IE9下 fireEVent 不会触发事件；此处采用赋值操作以避免js压缩时清除冗余语句；
                 
@@ -118,7 +118,7 @@
            
            var fireEvent = function (eventType, option) {
                 var dom = this;
-                option = option || {bubbles:false,cancelable:false};
+                option = option || {bubbles:true, cancelable:true};
                 option.ieHack = dom.all && dom.all.toString(); // 规避 IE 异常，当 dom 不在DOM树时，IE7下 fireEVent会抛出异常；此处采用赋值操作以避免js压缩时清除冗余语句；
                 option.ieHack = dom.style; // 规避 IE 异常，当 dom 不在DOM树时，IE8下 fireEVent 不会触发事件；此处采用赋值操作以避免js压缩时清除冗余语句；
                 
