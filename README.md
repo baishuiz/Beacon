@@ -6,12 +6,13 @@ Beacon
 ### 事件  
 事件对象可分为如下几种类型:  
 * 字符串  
-
-        var event = "简单事件字符串";// 字符串可以是任意字符组合，也可以是浏览器预定事件名
+    字符串可以是任意字符组合，也可以是浏览器预定事件名
+        var event = "简单事件字符串"; 
 * 普通事件对象      
+    通过 createEvent 方法创建普通事件。对象createEvent 方法接受一个参数，该参数可以为任意类型。
 
         var event = beacon.createEvent("General Event");
-    
+   
 * 复合事件对象      
 
         var eventA = beacon.createEvent("General Event A");
