@@ -3,14 +3,17 @@ Beacon
 
 轻量级事件类库
 
-### 事件
+### 事件  
 事件对象可分为如下几种类型:  
 * 字符串  
+
         var event = "简单事件字符串";
 * 普通事件对象      
+
         var event = beacon.createEvent("General Event");
     
 * 复合事件对象      
+
         var eventA = beacon.createEvent("General Event A");
         var eventB = beacon.createEvent("General Event B");
         var ComEvent = beacon.createEvent(eventA, eventB);
