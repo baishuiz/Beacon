@@ -295,8 +295,8 @@ describe("Beacon", function () {
             });
         });
         
-        describe("获取事件对象", function() {
-            it("当触发普通事件时", function(){
+        describe("获取事件对象及消息体", function() {
+            it("当触发字符事件时", function(){
                 var result = "";
                 beacon.on("eventtest", function(event, data){
                     expect(event).toBeDefined();
@@ -307,11 +307,20 @@ describe("Beacon", function () {
                 beacon.on("eventtest", "someData");
                 expect(result).toEqual("someData");
             });
+            
+            it("当触发普通事件对象时", function(){
+                var result = "";
+                var event = beacon.createEvent("event object");
+                beacon.on(event, function(event, data) {
+                    expect(event).toBeDefined();
+                    expect(data).toBeDefined();
+                    expect(data).toEqual("someData");
+                    result = data;
+                });
+                beacon.on(event, "someData");
+                expect(result).toEqual("someData");
+            });
+            
         });
     });
-    
-    
-    
-    
-    
 });
