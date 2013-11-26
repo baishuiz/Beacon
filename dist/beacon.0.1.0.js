@@ -632,19 +632,14 @@
       }
        
       ,isHTMLElement : function (obj) {
-            var _isHTMLElement;
-            if (host.HTMLElement) {
-        	    _isHTMLElement = obj instanceof HTMLElement ;
-        	} else {
-        	    var _nodeName = obj.nodeName;
-        		_isHTMLElement = !delete obj.nodeName;
-        		obj.nodeName = _nodeName;
-        	}
-        
-        	if(!_isHTMLElement){
-        	    _isHTMLElement = obj==document || obj == window;
-        	}
-        	return _isHTMLElement;
+            var _isHTMLElement = obj==document || obj == window;
+            var testNodeName = function(target){
+                var nodeName = target.nodeName;
+                
+                return nodeName && 
+                    document.createElement(nodeName).constructor === target.constructor
+            };
+            return _isHTMLElement || testNodeName(obj);
         }
         
        ,isEventSupported : function(dom, eventType){
