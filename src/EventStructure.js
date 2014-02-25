@@ -1,5 +1,5 @@
 /*
- * @module  DOMEvent
+ * @module  EventStructure
  * MIT Licensed
  * @author  baishuiz@gmail.com
  */
