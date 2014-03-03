@@ -8,8 +8,7 @@
     var base = beacon.base;
     
     function registEvent(eventId, eventName, eventHandle) {
-        var indexOf = base.arrayIndexOf;
-        
+
         if(!eventList[eventId] || eventList[eventId].length<=0) {
           eventList[eventId] = [{
             name:eventName
@@ -89,6 +88,10 @@
     }
     
     function getEventList(targetId, eventName) {
+        if(!targetId && !eventName){
+            return eventList.slice(0);
+        }
+        
         var events = eventList[targetId];
         var handleList;
         for(var i=0; i<events.length; i++) {
