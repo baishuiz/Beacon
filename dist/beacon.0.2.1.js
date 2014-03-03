@@ -441,20 +441,21 @@
  * @author  baishuiz@gmail.com
  */
 ;(function (beacon) {
-    var base = beacon.base;
-    var getTargetIndex = base.targetStore.getTargetIndex,
-        registTarget   = base.targetStore.registTarget,
-        getTargetList  = base.targetStore.getTargetList;
+    var base        = beacon.base,
+        targetStore = base.targetStore,
+        eventStore  = base.eventStore;
+        
+    var getTargetIndex = targetStore.getTargetIndex,
+        registTarget   = targetStore.registTarget,
+        getTargetList  = targetStore.getTargetList;
     
     
-    var registCombinationEvent = base.eventStore.registCombinationEvent,
-        registEvent            = base.eventStore.registEvent,
-        removeCombinationEvent = base.eventStore.removeCombinationEvent,
-        removeEvent            = base.eventStore.removeEvent,
-        getEventList           = base.eventStore.getEventList;
-    //var eventList = [];
-    //var targetList = [];
-    
+    var registCombinationEvent = eventStore.registCombinationEvent,
+        registEvent            = eventStore.registEvent,
+        removeCombinationEvent = eventStore.removeCombinationEvent,
+        removeEvent            = eventStore.removeEvent,
+        getEventList           = eventStore.getEventList;
+
     var event = {
        hostProxy : {}
        
