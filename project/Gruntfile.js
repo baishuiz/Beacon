@@ -11,7 +11,7 @@ module.exports = function(grunt){
             }
             
            ,dist: {
-                src: ['../src/beacon.js','../src/base.js','../src/EventStructure.js','../src/TargetStore.js','../src/combinationalEvent.js','../src/Event.js','../src/DOMEvent.js','../src/openAPI.js'],
+                src: ['../src/beacon.js','../src/base.js','../src/EventStructure.js','../src/TargetStore.js','../src/EventStore.js','../src/combinationalEvent.js','../src/Event.js','../src/DOMEvent.js','../src/openAPI.js'],
                 dest: '../dist/<%= output.fileName %>'
             }
         }
