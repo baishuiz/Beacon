@@ -5,9 +5,12 @@
  */
 ;(function (beacon) {
     var base = beacon.base;
+    var getTargetIndex = base.targetStore.getTargetIndex,
+        registTarget   = base.targetStore.registTarget,
+        getTargetList  = base.targetStore.getTargetList;
     
     var eventList = [];
-    var targetList = [];
+    //var targetList = [];
     
     var event = {
        hostProxy : {}
@@ -23,6 +26,7 @@
         
        ,fireEvent : function(eventName, eventBody){
             var target = this;
+            var targetList = getTargetList();
             var targetIndex = getTargetIndex(targetList,target);
             var events = eventList[targetIndex];
             var eventHandles;
@@ -41,6 +45,7 @@
         }
        
        ,publicDispatchEvent : function(eventName, eventBody){
+            var targetList = getTargetList();
             base.each(targetList,function(i){
                 event.fireEvent.call(targetList[i], eventName, eventBody);
             });
@@ -49,6 +54,7 @@
        
        ,removeEvent: function(eventName,eventHandle){
            var target = this;
+           var targetList = getTargetList();
            var targetIndex = getTargetIndex(targetList,target);
            
            if(eventName instanceof base.combinationalEvent) {
@@ -59,6 +65,7 @@
        }       
     };
     
+    
     var Event = (function(){
             var Event = function(){};
             Event.prototype = event;
@@ -68,18 +75,7 @@
     
     
     
-    function getTargetIndex(targetList,target){
-         var targetIndex = base.arrayIndexOf(targetList,target);
-         return targetIndex;
-    }
-    
-    function registTarget(target) {
-        var targetIndex = getTargetIndex(targetList,target);
-        if(targetIndex<0){
-            targetIndex = targetList.push(target) - 1;
-        }
-        return targetIndex;
-    }
+
     
     function registEvent(eventId, eventName, eventHandle) {
         var indexOf = base.arrayIndexOf;

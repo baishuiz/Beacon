@@ -178,7 +178,80 @@
         }
     };
     _base.blend(base, _base);
-})(beacon);;;(function(beacon){
+})(beacon);;/*
+ * @module  EventStructure
+ * MIT Licensed
+ * @author  baishuiz@gmail.com
+ */
+;(function (beacon) {
+    var base = beacon.base;
+    var EventStructure  = function(dom) {
+       var arrayIndexOf = base.arrayIndexOf;
+       var events = [];
+       var api = {
+           dom : dom
+          ,attachEvent : function (eventName, eventHandle) {
+              events[eventName] = events[eventName] || [];
+              events[eventName].push(eventHandle);
+              events.push(eventName);
+          }
+          
+         ,removeEvent : function (eventName, eventHandle) {
+              var eventHandles = events[eventName];
+              var result;
+              if(eventName && eventHandle) {
+                  var handleIndex = arrayIndexOf(eventHandles, eventHandle);
+                  result = events[eventName].splice(handleIndex, 1);
+              } else if(eventName && !eventHandle) {
+                  result = events[eventName];
+                  events[eventName] = [];
+              } else if(!eventName && !eventHandle) {
+                  result = events;
+                  events = [];
+              }
+              return result;
+          } 
+       }
+       return api
+    }
+
+    base.EventStructure = EventStructure;
+}) (beacon);;/*
+ * @module  TargetStore
+ * MIT Licensed
+ * @author  baishuiz@gmail.com
+ */
+;(function (beacon) {
+    var base = beacon.base;
+
+    var targetList = [];
+    
+    function getTargetIndex(targetList,target){
+         var targetIndex = base.arrayIndexOf(targetList,target);
+         return targetIndex;
+    }
+    
+    function registTarget(target) {
+        var targetIndex = getTargetIndex(targetList,target);
+        if(targetIndex<0){
+            targetIndex = targetList.push(target) - 1;
+        }
+        return targetIndex;
+    }
+    
+    function getTargetList(isRef){
+        return isRef ? targetList : targetList.slice(0) ;
+    }
+    
+    var TargetStoreApi = {
+        getTargetIndex : getTargetIndex,
+        registTarget   : registTarget,
+        getTargetList  : getTargetList
+    };
+    
+
+    base.targetStore = TargetStoreApi;
+}) (beacon);;;(function(beacon){
     var base = beacon.base;
     function CombinationalEvent(){
         
@@ -256,9 +329,12 @@
  */
 ;(function (beacon) {
     var base = beacon.base;
+    var getTargetIndex = base.targetStore.getTargetIndex,
+        registTarget   = base.targetStore.registTarget,
+        getTargetList  = base.targetStore.getTargetList;
     
     var eventList = [];
-    var targetList = [];
+    //var targetList = [];
     
     var event = {
        hostProxy : {}
@@ -274,6 +350,7 @@
         
        ,fireEvent : function(eventName, eventBody){
             var target = this;
+            var targetList = getTargetList();
             var targetIndex = getTargetIndex(targetList,target);
             var events = eventList[targetIndex];
             var eventHandles;
@@ -292,6 +369,7 @@
         }
        
        ,publicDispatchEvent : function(eventName, eventBody){
+            var targetList = getTargetList();
             base.each(targetList,function(i){
                 event.fireEvent.call(targetList[i], eventName, eventBody);
             });
@@ -300,6 +378,7 @@
        
        ,removeEvent: function(eventName,eventHandle){
            var target = this;
+           var targetList = getTargetList();
            var targetIndex = getTargetIndex(targetList,target);
            
            if(eventName instanceof base.combinationalEvent) {
@@ -310,6 +389,7 @@
        }       
     };
     
+    
     var Event = (function(){
             var Event = function(){};
             Event.prototype = event;
@@ -319,18 +399,7 @@
     
     
     
-    function getTargetIndex(targetList,target){
-         var targetIndex = base.arrayIndexOf(targetList,target);
-         return targetIndex;
-    }
-    
-    function registTarget(target) {
-        var targetIndex = getTargetIndex(targetList,target);
-        if(targetIndex<0){
-            targetIndex = targetList.push(target) - 1;
-        }
-        return targetIndex;
-    }
+
     
     function registEvent(eventId, eventName, eventHandle) {
         var indexOf = base.arrayIndexOf;
@@ -440,35 +509,7 @@
     var base = beacon.base;
     var host = (function(){return this}());
     
-    var EventStructure  = function(dom) {
-       var arrayIndexOf = base.arrayIndexOf;
-       var events = [];
-       var api = {
-           dom : dom
-          ,attachEvent : function (eventName, eventHandle) {
-              events[eventName] = events[eventName] || [];
-              events[eventName].push(eventHandle);
-              events.push(eventName);
-          }
-          
-         ,removeEvent : function (eventName, eventHandle) {
-              var eventHandles = events[eventName];
-              var result;
-              if(eventName && eventHandle) {
-                  var handleIndex = arrayIndexOf(eventHandles, eventHandle);
-                  result = events[eventName].splice(handleIndex, 1);
-              } else if(eventName && !eventHandle) {
-                  result = events[eventName];
-                  events[eventName] = [];
-              } else if(!eventName && !eventHandle) {
-                  result = events;
-                  events = [];
-              }
-              return result;
-          } 
-       }
-       return api
-    }
+    var EventStructure  = base.EventStructure;
 
     var eventMap = {
         structures : []
