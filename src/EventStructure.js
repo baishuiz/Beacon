@@ -5,9 +5,7 @@
  */
 ;(function (beacon) {
     var base = beacon.base;
-    
-    
-    
+
     var EventStructure  = function(dom) {
        var arrayIndexOf = base.arrayIndexOf;
        var events = [];

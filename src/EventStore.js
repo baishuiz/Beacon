@@ -8,12 +8,14 @@
     var base = beacon.base;
     var EventStructure = base.EventStructure;
     
+    function createEventStructure(target) {
+        var structure = new EventStructure(target);
+        eventList.push(structure);
+        return structure;
+    }
+    
     function registEvent(target, eventName, eventHandle) {
-        var activeStructure = getEventList(target);
-        if(!activeStructure) {
-            activeStructure = new EventStructure(target);
-            eventList.push(activeStructure);
-        } 
+        var activeStructure = getEventList(target) || createEventStructure(target);
         activeStructure.attachEvent(eventName, eventHandle);
     }
 
@@ -26,18 +28,10 @@
     }
     
     function removeEvent(target, eventName, eventHandle) {
-        if(!target){
-            
-            base.each(eventList,function(index,activeEvent) {
-                //var activeStructure = getEventList(activeTarget);
-                activeEvent.removeEvent(eventName, eventHandle);     
-            })
-            eventList =[];
-            return;
-        }
-        
-        var activeStructure = getEventList(target);
-        return activeStructure && activeStructure.removeEvent(eventName, eventHandle);
+        var structureList = target ? (getEventList(target) || []) : eventList;
+        base.each(structureList, function(index, activeStructure) {
+            activeStructure.removeEvent(eventName, eventHandle);     
+        });
     }
     
     function removeCombinationEvent(target, event, eventHandle) {
@@ -45,8 +39,7 @@
         base.each(handleProxyList, function(i){
             var handleProxy = handleProxyList[i];
             var eventList = event.getEventList();
-            base.each(eventList, function(index) {
-                var eventName = eventList[index];
+            base.each(eventList, function(index, eventName) {
                 removeEvent(target, eventName, handleProxy);    
             });
         });    
