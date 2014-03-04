@@ -5,32 +5,58 @@
  */
 ;(function (beacon) {
     var base = beacon.base;
+    
+    
+    
     var EventStructure  = function(dom) {
        var arrayIndexOf = base.arrayIndexOf;
        var events = [];
+       
+       function getEventName(event){
+        var eventIndex = arrayIndexOf(events,event);
+        if(eventIndex<0){
+            eventIndex = events.push(event)-1;
+        }
+        var eventName = base.isType(event,'String')?event:"event_" + eventIndex;
+        return eventName;
+       }
+       
        var api = {
            dom : dom
-          ,attachEvent : function (eventName, eventHandle) {
+          ,attachEvent : function (event, eventHandle) {
+              var eventName = getEventName(event);
               events[eventName] = events[eventName] || [];
               events[eventName].push(eventHandle);
-              events.push(eventName);
+              
           }
           
-         ,removeEvent : function (eventName, eventHandle) {
-              var eventHandles = events[eventName];
+         ,removeEvent : function (event, eventHandle) {
+              
               var result;
-              if(eventName && eventHandle) {
+              if(event && eventHandle) {
+                  var eventName = getEventName(event);
+                  var eventHandles = events[eventName];
                   var handleIndex = arrayIndexOf(eventHandles, eventHandle);
                   result = events[eventName].splice(handleIndex, 1);
-              } else if(eventName && !eventHandle) {
+              } else if(event && !eventHandle) {
+                  var eventName = getEventName(event);
+                  var eventHandles = events[eventName];
                   result = events[eventName];
                   events[eventName] = [];
-              } else if(!eventName && !eventHandle) {
+              } else if(!event && !eventHandle) {
                   result = events;
                   events = [];
               }
               return result;
-          } 
+          }
+          
+         ,getEventList : function(event){
+             var eventName = getEventName(event);
+             var result = event ? events[eventName] : events.slice(0);
+             return result;
+         }
+         
+         ,getEventName:getEventName
        }
        return api
     }

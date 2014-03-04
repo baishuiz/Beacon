@@ -5,14 +5,8 @@
  */
 ;(function (beacon) {
     var base        = beacon.base,
-        targetStore = base.targetStore,
         eventStore  = base.eventStore;
         
-    var getTargetIndex = targetStore.getTargetIndex,
-        registTarget   = targetStore.registTarget,
-        getTargetList  = targetStore.getTargetList;
-    
-    
     var registCombinationEvent = eventStore.registCombinationEvent,
         registEvent            = eventStore.registEvent,
         removeCombinationEvent = eventStore.removeCombinationEvent,
@@ -23,27 +17,20 @@
        hostProxy : {}
        
        ,attachEvent : function(eventName, eventHandle) {
-            var eventId = registTarget(this);
+            //var eventId = registTarget(this);
+            var target = this;
             var regEvent = (eventName instanceof base.combinationalEvent) ? 
                                registCombinationEvent :
                                    registEvent;
                                    
-            regEvent(eventId, eventName, eventHandle);
+            regEvent(target, eventName, eventHandle);
         }
         
        ,fireEvent : function(eventName, eventBody){
             var target = this;
-            var targetList = getTargetList();
-            var eventList = getEventList();
-            var targetIndex = getTargetIndex(targetList,target);
-            var events = eventList[targetIndex];
-            var eventHandles;
-            for(var i=0; i<events.length; i++) {
-                if(events[i].name === eventName ) {
-                    eventHandles = events[i].fn;
-                    break;
-                }
-            }
+            var eventList = getEventList(target);
+            var eventHandles = eventList.getEventList(eventName);
+
             base.each(eventHandles, function(i){
                 var eventObject = {
                     eventType:eventName
@@ -53,22 +40,20 @@
         }
        
        ,publicDispatchEvent : function(eventName, eventBody){
-            var targetList = getTargetList();
+            var targetList = getEventList();
             base.each(targetList,function(i){
-                event.fireEvent.call(targetList[i], eventName, eventBody);
+                var activeTarget = targetList[i];
+                event.fireEvent.call(activeTarget.dom, eventName, eventBody);
             });
        }
        
        
        ,removeEvent: function(eventName,eventHandle){
            var target = this;
-           var targetList = getTargetList();
-           var targetIndex = getTargetIndex(targetList,target);
-           
            if(eventName instanceof base.combinationalEvent) {
-               removeCombinationEvent(targetIndex, eventName, eventHandle);
+               removeCombinationEvent(target, eventName, eventHandle);
            } else {
-               removeEvent(targetIndex, eventName, eventHandle);
+               removeEvent(target, eventName, eventHandle);
            }
        }       
     };
