@@ -103,30 +103,6 @@
         
         
         
-        /**
-        * @name beacon.base.NS
-        * @class [创建命名空间]
-        * @param {String} NSString [要创建的命名空间，以点号隔开]
-        * @param {Object} root [参数nsString的根节点，(默认是 当前host)]
-        * @return {Object} [返回创建的对象，若已存在则直接返回]
-        * @example
-        * beacon.base.NS("Biz.Common").ConsoleOne=function(){console.log(1);};
-        * Biz.Common.ConsoleOne();
-        * 结果：输出 1
-        */
-        NS: function (nsString, root) {
-            var host   = (function(){return this;})();
-            var nsPath = nsString.split("."),
-                ns     = root || host || {}; 
-                
-            for (var i = 0, len = nsPath.length; i < len; i++) {
-                var currentPath = nsPath[i];
-                ns[currentPath] = ns[currentPath] || {};
-                ns = ns[currentPath];
-            }
-            return ns;
-        },
-        
         
         
         /**
@@ -168,13 +144,6 @@
             for (var i = array.length - 1; i >= 0; i--) {
                 fn.call(array[i],i,array[i]);
             }
-        },
-       
-       getGUID : function(){
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c) {
-                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3 | 0x8);
-                return v.toString(16);
-            }).toUpperCase();
         }
     };
     _base.blend(base, _base);
@@ -455,7 +424,7 @@
     var eventMap = {
         structures : []
        ,getStructure : function(dom) {
-           var activeStructure
+           var activeStructure;
            for(var i = 0; i < eventMap.structures.length; i++) {
                activeStructure = eventMap.structures[i];
                if (activeStructure.dom === dom) {

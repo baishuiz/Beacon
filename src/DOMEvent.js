@@ -12,7 +12,7 @@
     var eventMap = {
         structures : []
        ,getStructure : function(dom) {
-           var activeStructure
+           var activeStructure;
            for(var i = 0; i < eventMap.structures.length; i++) {
                activeStructure = eventMap.structures[i];
                if (activeStructure.dom === dom) {
