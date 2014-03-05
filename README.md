@@ -44,42 +44,17 @@ Beacon
 
         beacon.on(event, [userData]);
         
-### 移除指定事件句柄
-        var eventHandle = function(){};
-        beacon.on("event", eventHandle);        
-        beacon.off("event", eventHandle);
+### 移除事件侦听
+* 移除全局事件
+
+        beacon.off("event" [, eventHandle]);
         
-### 移除特定对象的指定事件句柄
-        var eventHandle = function(){};
-        var target = {};
-        beacon(target).on("event", eventHandle);        
-        beacon(target).off("event", eventHandle);        
+* 移除特定对象的指定事件
+
+        beacon(target).off("event" [, eventHandle]);        
         
-### 移除特定对象的指定事件
-        var eventHandle = function(){};
-        var target = {};
-        beacon(target).on("event", eventHandle);        
-        beacon(target).off("event");                
-        
-### 移除特定对象的所有事件
-        var eventHandle = function(){};
-        var target = {};
-        beacon(target).on("event", eventHandle);        
+
+* 移除特定对象的所有事件
+
         beacon(target).off();                        
         
-### 特定事件
-        var event = beacon.createEvent("test event");
-        beacon.on(event, function(){
-            console.log("事件已触发");
-        });
-        beacon.on(event);
-        
-### 复合事件
-        var eventA = beacon.createEvent("test event A");
-        var eventB = beacon.createEvent("test event B");
-        var ComEvent = beacon.createEvent(eventA, eventB);
-        beacon.on(Comevent, function(){
-            console.log("事件已触发");
-        });
-        beacon.on(eventA);
-        beacon.on(eventB);
