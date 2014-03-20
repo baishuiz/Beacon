@@ -173,7 +173,7 @@
       ,isHTMLElement : function (obj) {
             var _isHTMLElement = obj==document || obj == window;
             var testNodeName = function(target){
-                var nodeName = target.nodeName;
+                var nodeName = target && target.nodeName;
                 
                 return nodeName && 
                     document.createElement(nodeName).constructor === target.constructor

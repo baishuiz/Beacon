@@ -28,6 +28,14 @@
                 return _on;         
         }(beacon))
         
+        , once : function(eventName, eventHandle){
+            var handleProxy = function(){
+                 openAPI.off(eventName, eventHandle);
+            }
+            openAPI.on(eventName, eventHandle);
+            openAPI.on(eventName, handleProxy);
+        }
+        
         , off : (function(){
             var base = beacon.base;
             var hostProxy = base.Event.hostProxy;
@@ -102,6 +110,13 @@
        
        
        
+       once : function(eventName, eventHandle){
+            var targetHost = this;
+            avatarAPI.on.call(targetHost, eventName, eventHandle);
+            avatarAPI.on.call(targetHost,eventName, function(){
+                avatarAPI.off.call(targetHost,eventName, eventHandle);
+            })
+       },
        
        
        /**
