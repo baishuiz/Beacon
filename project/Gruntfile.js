@@ -19,9 +19,15 @@ module.exports = function(grunt){
        ,jasmine: {
             pivotal: {
               src: '../dist/<%=output.fileName %>',
+              coverage: '../dist/<%=output.fileName %>',
               options: {
                 specs: '../test/spec/*Spec.js',
-                keepRunner: true
+                keepRunner: true,
+                template: require('grunt-template-jasmine-istanbul'),
+                templateOptions: {
+                    coverage: 'bin/coverage/coverage.json',
+                    report: 'bin/coverage',
+                }
               }
             }
             
@@ -40,6 +46,7 @@ module.exports = function(grunt){
             }
           }
         }    
+       
     });
     
     grunt.loadNpmTasks('grunt-contrib-concat');
