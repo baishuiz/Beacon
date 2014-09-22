@@ -688,6 +688,7 @@
         , Enum : base.Enum
         ,loginGlobal  : base.login
         ,logoffGlobal : base.logoff 
+        ,utility : base 
         ,createEvent : function(){
             var args = [].slice.call(arguments,0);
             var event;
