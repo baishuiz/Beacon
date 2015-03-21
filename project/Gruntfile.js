@@ -27,6 +27,7 @@ module.exports = function(grunt){
                 templateOptions: {
                     coverage: 'bin/coverage/coverage.json',
                     report: 'bin/coverage',
+                    files: '../dist/*'
                 }
               }
             }
