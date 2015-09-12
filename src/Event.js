@@ -6,7 +6,7 @@
 ;(function (beacon) {
     var base        = beacon.base,
         eventStore  = base.eventStore;
-        
+
     var registCombinationEvent = eventStore.registCombinationEvent,
         registEvent            = eventStore.registEvent,
         removeCombinationEvent = eventStore.removeCombinationEvent,
@@ -15,16 +15,16 @@
 
     var event = {
        hostProxy : {}
-       
+
        ,attachEvent : function(eventName, eventHandle) {
             var target   = this;
-            var regEvent = (eventName instanceof base.combinationalEvent) ? 
-                               registCombinationEvent :
-                                   registEvent;
-                                   
+            var regEvent = (eventName instanceof base.combinationalEvent)
+                           ? registCombinationEvent
+                           : registEvent;
+
             regEvent(target, eventName, eventHandle);
         }
-        
+
        ,fireEvent : function(eventName, eventBody){
             var target       = this;
             var eventList    = getEventList(target);
@@ -37,25 +37,31 @@
                 activeEventHandle.call(target, eventObject, eventBody);
             });
         }
-       
+
        ,publicDispatchEvent : function(eventName, eventBody){
-            var targetList = getEventList();
-            base.each(targetList, function(i){
-                var activeTarget = targetList[i].dom;
-                event.fireEvent.call(activeTarget, eventName, eventBody);
-            });
+            var targetList    = getEventList();
+            var isActionEvent = base.isType(eventName.desc, 'Function');
+            var actioniResult = isActionEvent && eventName.desc();
+            (actioniResult == isActionEvent) && fire();
+
+            function fire(){
+              base.each(targetList, function(i){
+                  var activeTarget = targetList[i].dom;
+                   event.fireEvent.call(activeTarget, eventName, eventBody);
+              });
+            }
        }
-       
-       
+
+
        ,removeEvent: function(eventName,eventHandle){
             var target = this;
             var removeFnProxy = (eventName instanceof base.combinationalEvent) ?
                                     removeCombinationEvent :
                                         removeEvent;
             removeFnProxy(target, eventName, eventHandle);
-       }       
+       }
     };
-    
+
 
     var Event = (function(){
             var Event = function(){};

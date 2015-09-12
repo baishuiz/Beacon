@@ -9,13 +9,13 @@ module.exports = function(grunt){
             options: {
                 separator: ';'
             }
-            
+
            ,dist: {
                 src: ['../src/beacon.js','../src/base.js','../src/EventStructure.js','../src/EventStore.js','../src/combinationalEvent.js','../src/Event.js','../src/DOMEvent.js','../src/openAPI.js'],
                 dest: '../dist/<%= output.fileName %>'
             }
         }
-        
+
        ,jasmine: {
             pivotal: {
               src: '../dist/<%=output.fileName %>',
@@ -31,14 +31,14 @@ module.exports = function(grunt){
                 }
               }
             }
-            
+
            ,mini: {
               src: '../dist/<%= output.minFileName %>',
               options: {
                 specs: '../test/spec/*Spec.js',
                 keepRunner:true
               }
-            }            
+            }
         }
        ,uglify: {
           mini: {
@@ -46,12 +46,13 @@ module.exports = function(grunt){
               '../dist/<%= output.minFileName %>': ['../dist/<%= output.fileName %>']
             }
           }
-        }    
-       
+        }
+
     });
-    
+
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.registerTask('default', [ 'concat', 'uglify', 'jasmine']);
+    grunt.registerTask('debug', [ 'concat']);
 };
