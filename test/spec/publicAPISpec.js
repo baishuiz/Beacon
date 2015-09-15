@@ -338,7 +338,19 @@ describe("Beacon", function () {
             expect(result).toEqual(666);
 
           });
+        
+            it("自定义行为事件", function(){
+                var actionEvent = beacon.createEvent(function(e){
+                    return e.radian && e.speed
+                });
+                
+                beacon.on(actionEvent, function(e) {
+                    expect(e.redian).toBeDefined();
+                    expect(e.speed).toBeDefined();
+                });
+            })
         });
+
     });
 
     describe("beacon.once", function(){

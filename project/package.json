@@ -1,6 +1,6 @@
 {
   "name": "beacon",
-  "version": "0.2.3",
+  "version": "2.0.1",
   "description": "base event proxy",
   "main": "beacon.js",
   "scripts": {
