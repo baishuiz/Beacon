@@ -16,12 +16,24 @@
     var event = {
        hostProxy : {}
 
+       ,attachActionEvent : function(eventName) {
+            var isActionEvent = base.isType(eventName.desc, 'Function');
+            isActionEvent && window.beacon(document).on("touchmove", function(e){
+              event.publicDispatchEvent(eventName, e);
+            });
+
+            isActionEvent && window.beacon(document).on("mousemove", function(e){
+              event.publicDispatchEvent(eventName, e);
+            });
+       }
+
        ,attachEvent : function(eventName, eventHandle) {
             var target   = this;
             var regEvent = (eventName instanceof base.combinationalEvent)
                            ? registCombinationEvent
                            : registEvent;
 
+            event.attachActionEvent(eventName);
             regEvent(target, eventName, eventHandle);
         }
 
@@ -41,8 +53,8 @@
        ,publicDispatchEvent : function(eventName, eventBody){
             var targetList    = getEventList();
             var isActionEvent = base.isType(eventName.desc, 'Function');
-            var actioniResult = isActionEvent && eventName.desc();
-            (actioniResult == isActionEvent) && fire();
+            var actioniResult = isActionEvent && eventName.desc(eventBody);
+            (!!actioniResult == !!isActionEvent) && fire();
 
             function fire(){
               base.each(targetList, function(i){

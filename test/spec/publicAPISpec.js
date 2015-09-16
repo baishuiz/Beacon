@@ -338,17 +338,32 @@ describe("Beacon", function () {
             expect(result).toEqual(666);
 
           });
-        
+
             it("自定义行为事件", function(){
+                var result = 0;
                 var actionEvent = beacon.createEvent(function(e){
-                    return e.radian && e.speed
+                    var result = {
+                      redian : 10,
+                      speed  : 6
+                    }
+                    return result;
                 });
-                
+
                 beacon.on(actionEvent, function(e) {
-                    expect(e.redian).toBeDefined();
-                    expect(e.speed).toBeDefined();
+                    // expect(e.redian).toBeDefined();
+                    // expect(e.speed).toBeDefined();
+                    result = 100;
                 });
-            })
+
+                beacon(document).on("touchmove");
+                expect(result).toEqual(100);
+
+                result = 0;
+                expect(result).toEqual(0);
+                beacon(document).on("mousemove");
+                expect(result).toEqual(100);
+
+            });
         });
 
     });
