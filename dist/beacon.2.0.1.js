@@ -363,13 +363,14 @@
 
        ,attachActionEvent : function(eventName) {
             var isActionEvent = base.isType(eventName.desc, 'Function');
-            isActionEvent && window.beacon(document).on("touchmove", function(e){
-              event.publicDispatchEvent(eventName, e);
-            });
+            var eventList = ['touchmove', 'mousemove'];
 
-            isActionEvent && window.beacon(document).on("mousemove", function(e){
-              event.publicDispatchEvent(eventName, e);
-            });
+            base.each(eventList,function(i, activeEvent){
+              isActionEvent && window.beacon(document).on(activeEvent, function(e){
+                event.publicDispatchEvent(eventName, e);
+              });
+            })
+
        }
 
        ,attachEvent : function(eventName, eventHandle) {
@@ -383,10 +384,13 @@
         }
 
        ,fireEvent : function(eventName, eventBody){
-            var target       = this;
-            var eventList    = getEventList(target);
-            var eventHandles = eventList.getEventList(eventName);
+            var target        = this;
+            var eventList     = getEventList(target);
+            var eventHandles  = eventList.getEventList(eventName);
+            var isActionEvent = base.isType(eventName.desc, 'Function');
+            var actioniResult = isActionEvent && eventName.desc(eventBody);
 
+            (!!actioniResult == !!isActionEvent) &&
             base.each(eventHandles, function(index, activeEventHandle){
                 var eventObject = {
                     eventType:eventName
@@ -399,22 +403,20 @@
             var targetList    = getEventList();
             var isActionEvent = base.isType(eventName.desc, 'Function');
             var actioniResult = isActionEvent && eventName.desc(eventBody);
-            (!!actioniResult == !!isActionEvent) && fire();
 
-            function fire(){
-              base.each(targetList, function(i){
-                  var activeTarget = targetList[i].dom;
-                   event.fireEvent.call(activeTarget, eventName, eventBody);
-              });
-            }
+            base.each(targetList, function(i){
+                var activeTarget = targetList[i].dom;
+                event.fireEvent.call(activeTarget, eventName, eventBody);
+            });
+
        }
 
 
        ,removeEvent: function(eventName,eventHandle){
             var target = this;
-            var removeFnProxy = (eventName instanceof base.combinationalEvent) ?
-                                    removeCombinationEvent :
-                                        removeEvent;
+            var removeFnProxy = (eventName instanceof base.combinationalEvent)
+                                ?  removeCombinationEvent
+                                :  removeEvent;
             removeFnProxy(target, eventName, eventHandle);
        }
     };
