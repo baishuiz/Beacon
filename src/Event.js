@@ -16,8 +16,10 @@
     var event = {
        hostProxy : {}
 
-       ,attachActionEvent : function(eventName) {
+       ,attachActionEvent : function(eventName, target, eventHandle) {
+            var actionEvent = eventName.desc;
             var isActionEvent = base.isType(eventName.desc, 'Function');
+            isActionEvent && actionEvent(target, eventHandle);
             var eventList = ['touchmove', 'mousemove'];
 
             base.each(eventList,function(i, activeEvent){
@@ -34,7 +36,7 @@
                            ? registCombinationEvent
                            : registEvent;
 
-            event.attachActionEvent(eventName);
+            event.attachActionEvent(eventName, target, eventHandle);
             regEvent(target, eventName, eventHandle);
         }
 

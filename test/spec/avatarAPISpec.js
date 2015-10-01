@@ -489,6 +489,27 @@ describe("自定义条件事件", function(){
 
   });
 
+    it('条件事件初始化', function(){
+       var target = {};
+       var result = 0;
+       var actionEvent = beacon.createEvent(function(target, eventHandle){
+          result = {
+            target : target,
+            handle : eventHandle
+          };
+       });
+
+       var eventHandle = function(){
+         result = 999;
+       }
+       beacon(target).on(actionEvent, eventHandle);
+
+       expect(result.target).toEqual(target);
+       expect(result.handle).toEqual(eventHandle);
+       result.handle();
+       expect(result).toEqual(999);
+    })
+
     it("自定义行为事件", function(){
 
         var target = {};
