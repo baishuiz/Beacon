@@ -182,7 +182,7 @@
         }
         
        ,isEventSupported : function(dom, eventType){
-            if(!event.isHTMLElement(dom)){ return false}
+            if(!event.isHTMLElement(dom) || !base.isType(eventType, 'String')){ return false}
         	
             var isSupported = false;
             if(dom === window || dom === document) {
