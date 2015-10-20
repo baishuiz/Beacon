@@ -186,6 +186,10 @@
         	
             var isSupported = false;
             if(dom === window || dom === document) {
+                isSupported = "on"+eventType in dom;
+                if(isSupported){
+                    return isSupported
+                }
                 var ifm = document.createElement('iframe');
                 ifm.style.display='none';
                 document.body.appendChild(ifm);
