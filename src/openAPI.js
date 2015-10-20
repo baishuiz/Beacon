@@ -141,9 +141,10 @@
                                             base.Event.removeEvent;
 
             base.each(target,function(i,target){
+                var isDomEvent = eventType && base.DOMEvent.isEventSupported(target, eventType);
                 //removeEventListener.call(target, eventType, eventHandle, option);
                 isHTMLElement && base.DOMEvent.removeEvent.call(target, eventType, eventHandle, option);
-                base.Event.removeEvent.call(target, eventType, eventHandle, option);
+                isDomEvent || base.Event.removeEvent.call(target, eventType, eventHandle, option);
             });
        }
    };

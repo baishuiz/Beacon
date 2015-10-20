@@ -187,8 +187,12 @@
             var isSupported = false;
             if(dom === window || dom === document) {
                 isSupported = "on"+eventType in dom;
-                if(isSupported){
-                    return isSupported
+                 var isIE = !!window.ActiveXObject;
+                 var isIE8 = isIE && !!document.documentMode; 
+                if(!isSupported && isIE8){
+                    return false
+                } else if(isSupported) {
+                  return true
                 }
                 var ifm = document.createElement('iframe');
                 ifm.style.display='none';

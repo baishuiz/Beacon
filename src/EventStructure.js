@@ -33,6 +33,7 @@
               var result;
               var eventName = event && getEventName(event);
               var eventHandles = eventName && events[eventName];
+              // if(!eventHandles){return}
               if(event && eventHandle) {
                   var handleIndex = arrayIndexOf(eventHandles, eventHandle);
                   result = events[eventName].splice(handleIndex, 1);
