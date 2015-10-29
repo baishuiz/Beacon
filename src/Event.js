@@ -43,6 +43,7 @@
        ,fireEvent : function(eventName, eventBody){
             var target        = this;
             var eventList     = getEventList(target);
+            if(!eventList) {return}
             var eventHandles  = eventList.getEventList(eventName);
             var isActionEvent = base.isType(eventName.desc, 'Function');
             var actioniResult = isActionEvent && eventName.desc(eventBody);

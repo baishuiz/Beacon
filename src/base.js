@@ -98,7 +98,7 @@
        each : function(array,fn){
             if(!array) return;
             array = [].concat(array);
-            for (var i = array.length - 1; i >= 0; i--) {
+            for (var i = 0; i < array.length; i++) {
                 fn.call(array[i],i,array[i]);
             }
         }
