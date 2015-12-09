@@ -20,6 +20,15 @@
             return eventName;
        }
        
+       function tryGetEventName(event){
+          var eventIndex = arrayIndexOf(events, event);
+          if(eventIndex<0){
+            return null;
+          } else {
+            return getEventName(event);
+          }
+       }
+       
        var api = {
            dom : target,
            target : target
@@ -48,8 +57,10 @@
           }
           
          ,getEventList : function(event){
-             var eventName = getEventName(event);
+             var eventName = tryGetEventName(event);
+             if(eventName){
              var result = event ? events[eventName] : events.slice(0);
+             }
              return result;
          }
        }

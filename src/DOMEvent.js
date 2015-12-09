@@ -33,7 +33,7 @@
        
       ,remove : function (dom, eventName, eventHandle) {
           var activeStructure = eventMap.getStructure(dom);
-          return activeStructure.removeEvent(eventName, eventHandle);
+          return activeStructure && activeStructure.removeEvent(eventName, eventHandle);
       }
     }
     
@@ -175,8 +175,9 @@
             var testNodeName = function(target){
                 var nodeName = target && target.nodeName;
                 
-                return nodeName && 
-                    document.createElement(nodeName).constructor === target.constructor
+                return nodeName && target.nodeType;
+                // return nodeName && 
+                //     document.createElement(nodeName).constructor === target.constructor
             };
             return _isHTMLElement || testNodeName(obj);
         }

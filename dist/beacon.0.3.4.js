@@ -169,6 +169,15 @@
             return eventName;
        }
        
+       function tryGetEventName(event){
+          var eventIndex = arrayIndexOf(events, event);
+          if(eventIndex<0){
+            return null;
+          } else {
+            return getEventName(event);
+          }
+       }
+       
        var api = {
            dom : target,
            target : target
@@ -197,8 +206,10 @@
           }
           
          ,getEventList : function(event){
-             var eventName = getEventName(event);
+             var eventName = tryGetEventName(event);
+             if(eventName){
              var result = event ? events[eventName] : events.slice(0);
+             }
              return result;
          }
        }
@@ -217,6 +228,13 @@
     var EventStructure = base.EventStructure;
     
     function createEventStructure(target) {
+        for(var i=0; i<eventList.length; i++){
+            var activeEvent = eventList[i];
+            if(activeEvent.target === target) {
+                return activeEvent
+            }
+        }        
+        
         var structure = new EventStructure(target);
         eventList.push(structure);
         return structure;
@@ -236,10 +254,17 @@
     }
     
     function removeEvent(target, eventName, eventHandle) {
-        var structureList = target ? (getEventList(target) || []) : eventList;
+        var cloneEventList = eventList.slice(0)
+        var structureList = target ? (getEventList(target) || []) : eventList.slice(0);
         base.each(structureList, function(index, activeStructure) {
+
             activeStructure.removeEvent(eventName, eventHandle);     
+            if(!eventName && !eventHandle){
+              var index = base.arrayIndexOf(eventList,activeStructure);
+              cloneEventList.splice(index,1);
+           }
         });
+        eventList = cloneEventList;        
     }
     
     function removeCombinationEvent(target, event, eventHandle) {
@@ -470,7 +495,7 @@
        
       ,remove : function (dom, eventName, eventHandle) {
           var activeStructure = eventMap.getStructure(dom);
-          return activeStructure.removeEvent(eventName, eventHandle);
+          return activeStructure && activeStructure.removeEvent(eventName, eventHandle);
       }
     }
     
@@ -612,8 +637,9 @@
             var testNodeName = function(target){
                 var nodeName = target && target.nodeName;
                 
-                return nodeName && 
-                    document.createElement(nodeName).constructor === target.constructor
+                return nodeName && target.nodeType;
+                // return nodeName && 
+                //     document.createElement(nodeName).constructor === target.constructor
             };
             return _isHTMLElement || testNodeName(obj);
         }
