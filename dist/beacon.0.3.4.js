@@ -474,7 +474,7 @@
     var eventMap = {
         structures : []
        ,getStructure : function(dom) {
-            // IE 会报错 SCRIPT70 错误，偶发，原因位置
+            // IE 会报错 SCRIPT70 错误，偶发，原因未知
             try {
                 var activeStructure;
                 for(var i = 0; i < eventMap.structures.length; i++) {
