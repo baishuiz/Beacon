@@ -1,7 +1,7 @@
 ;(function (global) {
 
     var _beancon = global.beacon;
-    
+
     // beacon 天赋技能：为对象进行能力加持
     function Avatar(obj) {
         this.target = obj;
@@ -14,7 +14,7 @@
         }
         return new Avatar(obj);
     };
-    
+
     beacon.toString = function () { return "baishuiz@gmail.com"};
 
     // beacon 能力之源
@@ -27,7 +27,7 @@
             global.beacon = beacon;
             core.merge(beacon, preBeacon);
             delete global.beacon.base; // 保护内核，杜绝外部访问
-            freeze && freeze(beacon); 
+            freeze && freeze(beacon);
         },
         login:function(){
             global.beacon = beacon;
@@ -36,11 +36,11 @@
             global.beacon = _beancon;
         }
     };
-    
-    
+
+
     var preBeacon = {base:core}; // 创建影分身
     global.beacon = preBeacon; // 影分身修行开始， 开始各种能力加持，稍后将在 core.init 后被 beacon 吸收。
-    
+
 })(this);;
 ;(function (beacon) {
     var base = beacon.base || {};
@@ -51,7 +51,7 @@
         * @param  {Object} mainObj [merge对象到mainObj上]
         * @param  {Object} p1,p2,p3... [支持一次merge多个对象，从第二个参数开始]
         * @return {Object}         [返回merge之后的对象]
-        * @example 
+        * @example
         * NEG.base.merge({x:1,y:1},{z:1},{a:1})
         * 结果：返回 {x:1,y:1,z:1,a:1}
         */
@@ -65,8 +65,8 @@
             }
             return mainObj;
         },
-        
-        
+
+
         // options : --cover , --mergePrototype
         blend : function(mainObj,attrSource,options) {
             var _options = {
@@ -83,28 +83,28 @@
                     var rule2 = options.cover || !mainObj[item];
                     if(rule1 && rule2) {
                          mainObj[item] = sourceObj[item];
-                    } 
+                    }
                 }
             }
-            return mainObj;            
-            
+            return mainObj;
+
         },
-        
-        
-        
-        
+
+
+
+
        isType : function(obj,type){
             //return Object.toString.call(obj).indexOf('[object ' + type) == 0 || !!(obj instanceof Number);
             return (type === "Null" && obj === null) ||
                 (type === "Undefined" && obj === void 0 ) ||
                 (type === "Number" && isFinite(obj)) ||
                  Object.prototype.toString.call(obj).slice(8,-1) === type;
-        },        
-        
-        
-        
-        
-        
+        },
+
+
+
+
+
         /**
         * @name beacon.base.ArrayIndexOf
         * @class [返回对象存在数组的index,不存在返回-1]
@@ -117,7 +117,7 @@
         */
         //ToDO：改为两分法快速查找
         arrayIndexOf: function(array, el) {
-            _base.arrayIndexOf = Array.prototype.indexOf ? 
+            _base.arrayIndexOf = Array.prototype.indexOf ?
                         function(array, el){
                             array = [].slice.call(array,0);
                             return array.indexOf(el);
@@ -133,10 +133,10 @@
                         };
             return _base.arrayIndexOf(array, el);
         },
-         
 
-       
-       
+
+
+
        //ToDO： 增加一个可选参数进行深度each
        each : function(array,fn){
             if(!array) return;
@@ -158,7 +158,7 @@
     var EventStructure  = function(target) {
        var arrayIndexOf = base.arrayIndexOf;
        var events = [];
-       
+
        function getEventName(event){
             var eventIndex = arrayIndexOf(events, event);
             if(eventIndex < 0){
@@ -168,7 +168,7 @@
             var eventName = (event.toString() === event) ? event : eventAlias;
             return eventName;
        }
-       
+
        var api = {
            dom : target,
            target : target
@@ -177,7 +177,7 @@
               events[eventName] = events[eventName] || [];
               events[eventName].push(eventHandle);
           }
-          
+
          ,removeEvent : function (event, eventHandle) {
               var result;
               var eventName = event && getEventName(event);
@@ -194,7 +194,7 @@
               }
               return result;
           }
-          
+
          ,getEventList : function(event){
              var eventName = getEventName(event);
              var result = event ? events[eventName] : events.slice(0);
@@ -214,13 +214,13 @@
     var eventList = [];
     var base = beacon.base;
     var EventStructure = base.EventStructure;
-    
+
     function createEventStructure(target) {
         var structure = new EventStructure(target);
         eventList.push(structure);
         return structure;
     }
-    
+
     function registEvent(target, eventName, eventHandle) {
         var activeStructure = getEventList(target) || createEventStructure(target);
         activeStructure.attachEvent(eventName, eventHandle);
@@ -233,25 +233,25 @@
             registEvent(target, eventList[index], handleProxy);
         });
     }
-    
+
     function removeEvent(target, eventName, eventHandle) {
         var structureList = target ? (getEventList(target) || []) : eventList;
         base.each(structureList, function(index, activeStructure) {
-            activeStructure.removeEvent(eventName, eventHandle);     
+            activeStructure.removeEvent(eventName, eventHandle);
         });
     }
-    
+
     function removeCombinationEvent(target, event, eventHandle) {
         var handleProxyList = event.removeEvent(eventHandle);
         base.each(handleProxyList, function(i){
             var handleProxy = handleProxyList[i];
             var eventList = event.getEventList();
             base.each(eventList, function(index, eventName) {
-                removeEvent(target, eventName, handleProxy);    
+                removeEvent(target, eventName, handleProxy);
             });
-        });    
+        });
     }
-    
+
     function getEventList(target) {
         if(!target){
             return eventList.slice(0);
@@ -259,11 +259,11 @@
         for(var i=0; i<eventList.length; i++) {
             var activeEventList = eventList[i];
             if(activeEventList.dom === target ) {
-                return  activeEventList;        
+                return  activeEventList;
             }
         }
     }
-    
+
     var api = {
         registEvent : registEvent,
         registCombinationEvent : registCombinationEvent,
@@ -275,22 +275,22 @@
 }) (beacon);;;(function(beacon){
     var base = beacon.base;
     function CombinationalEvent(){
-        
+
         if(this instanceof CombinationalEvent) {
             return this;
         }
-        
+
         var handleList = [];
         var handleProxyList = [];
         var originalEvents = [].slice.call(arguments, 0);
         var events = originalEvents.slice(0);
-        
+
         var Fn = function() {
             function  resetEventList(){
                 events = originalEvents.slice(0);
                 return events;
             }
-            
+
             var attachHandleProxy = function(handle, handleProxy){
                 var index = base.arrayIndexOf(handleList,handle)
                 if(index < 0){
@@ -298,21 +298,21 @@
                     handleProxyList.push(handleProxy);
                 }
             };
-            
+
             var getHandleProxy = function(handle) {
                 var index = base.arrayIndexOf(handleList,handle);
                 var handleProxy = handleProxyList[index];
                 return handle ? handleProxy : handleProxyList.slice(0) ;
             }
-            
+
             this.resetEventList = resetEventList;
             this.getEventList = function(){
                 return originalEvents.slice(0);
             };
-            
-            
+
+
             this.registEvent = function (eventHandle){
-                
+
                 var indexOf = base.arrayIndexOf;
                 var events = originalEvents.slice(0);
                 var handleProxy = function(eventObject, eventBody){
@@ -321,7 +321,7 @@
                     if (eventIndex >= 0) {
                         events.splice(eventIndex, 1);
                     }
-                
+
                     if (events.length === 0) {
                         eventHandle.call(target, eventBody);
                         events = resetEventList();
@@ -330,18 +330,18 @@
                 attachHandleProxy(eventHandle, handleProxy);
                 return handleProxy;
             };
-            
-            
+
+
             this.removeEvent = function(eventHandle) {
                 var handleProxy = [].concat(getHandleProxy(eventHandle));
                 return handleProxy;
-            }            
+            }
         }
-        
+
         Fn.prototype = new CombinationalEvent();
         return new Fn();
     }
-    
+
     base.combinationalEvent = CombinationalEvent;
 })(beacon);;/*
  * @module  EventDispatcher
@@ -351,7 +351,7 @@
 ;(function (beacon) {
     var base        = beacon.base,
         eventStore  = base.eventStore;
-        
+
     var registCombinationEvent = eventStore.registCombinationEvent,
         registEvent            = eventStore.registEvent,
         removeCombinationEvent = eventStore.removeCombinationEvent,
@@ -360,16 +360,16 @@
 
     var event = {
        hostProxy : {}
-       
+
        ,attachEvent : function(eventName, eventHandle) {
             var target   = this;
-            var regEvent = (eventName instanceof base.combinationalEvent) ? 
+            var regEvent = (eventName instanceof base.combinationalEvent) ?
                                registCombinationEvent :
                                    registEvent;
-                                   
+
             regEvent(target, eventName, eventHandle);
         }
-        
+
        ,fireEvent : function(eventName, eventBody){
             var target       = this;
             var eventList    = getEventList(target);
@@ -382,7 +382,7 @@
                 activeEventHandle.call(target, eventObject, eventBody);
             });
         }
-       
+
        ,publicDispatchEvent : function(eventName, eventBody){
             var targetList = getEventList();
             base.each(targetList, function(i){
@@ -390,17 +390,17 @@
                 event.fireEvent.call(activeTarget, eventName, eventBody);
             });
        }
-       
-       
+
+
        ,removeEvent: function(eventName,eventHandle){
             var target = this;
             var removeFnProxy = (eventName instanceof base.combinationalEvent) ?
                                     removeCombinationEvent :
                                         removeEvent;
             removeFnProxy(target, eventName, eventHandle);
-       }       
+       }
     };
-    
+
 
     var Event = (function(){
             var Event = function(){};
@@ -418,7 +418,7 @@
 ;(function (beacon) {
     var base = beacon.base;
     var host = (function(){return this}());
-    
+
     var EventStructure  = base.EventStructure;
 
     var eventMap = {
@@ -432,38 +432,38 @@
                }
            }
        }
-       
+
        ,add : function (dom, eventName, eventHandle) {
            var activeStructure = eventMap.getStructure(dom);
            if(!activeStructure) {
              activeStructure = new EventStructure(dom);
              eventMap.structures.push(activeStructure);
-           } 
+           }
            activeStructure.attachEvent(eventName, eventHandle);
-           
+
        }
-       
+
       ,remove : function (dom, eventName, eventHandle) {
           var activeStructure = eventMap.getStructure(dom);
           return activeStructure.removeEvent(eventName, eventHandle);
       }
     }
-    
-    
+
+
     var help = {
         attachEvent : function (eventName, eventHandle) {
             var dom = this;
-            
+
             var addEventListener = function (eventName, eventHandle) {
                 var dom = this;
                 dom.addEventListener(eventName, eventHandle, false);
             };
-            
+
             var attachEvent = function(eventName, eventHandle){
                 var dom = this;
                 dom.attachEvent("on" + eventName, eventHandle);
             };
-            
+
             var otherFn = function(eventName, eventHandle) {
                 var dom = this;
                 var oldHandle = dom["on" + eventName];
@@ -472,7 +472,7 @@
                     eventHandle.call(dom);
                 };
             };
-            
+
             var proxy;
             if (host.addEventListener) {
                 addEventListener.call(dom, eventName, eventHandle);
@@ -486,7 +486,7 @@
             }
             return help.attachEvent = proxy;
         }
-       
+
        ,fireEvent   : function (eventType, option) {
             var dom = this;
             var dispatchEvent = function(eventType, option) {
@@ -494,24 +494,24 @@
                     option = option || {bubbles:true,cancelable:true};
                     option.ieHack = dom.all && dom.all.toString(); // 规避 IE 异常，当 dom 不在DOM树时，IE9下 fireEVent会抛出异常；此处采用赋值操作以避免js压缩时清除冗余语句；
                     option.ieHack = dom.style; // 规避 IE 异常，当 dom 不在DOM树时，IE9下 fireEVent 不会触发事件；此处采用赋值操作以避免js压缩时清除冗余语句；
-                
+
                     var evt = document.createEvent("Event");
                     evt.initEvent(eventType, option.bubbles, option.cancelable);
                     dom.dispatchEvent(evt);
            };
-           
+
            var fireEvent = function (eventType, option) {
                 var dom = this;
                 option = option || {bubbles:true, cancelable:true};
                 option.ieHack = dom.all && dom.all.toString(); // 规避 IE 异常，当 dom 不在DOM树时，IE7下 fireEVent会抛出异常；此处采用赋值操作以避免js压缩时清除冗余语句；
                 option.ieHack = dom.style; // 规避 IE 异常，当 dom 不在DOM树时，IE8下 fireEVent 不会触发事件；此处采用赋值操作以避免js压缩时清除冗余语句；
-                
+
                 eventType = 'on' + eventType;
                 var evt = document.createEventObject();
                 evt.cancelBubble = option.cancelable;
                 dom.fireEvent(eventType, evt);
            };
-           
+
             var proxy;
             if (document.createEvent && dom.dispatchEvent) {
                 dispatchEvent.call(dom, eventType, option);
@@ -522,19 +522,19 @@
             }
             return proxy;
        }
-        
+
        ,removeEvent : function (eventType, eventHandle) {
             var dom = this;
             var removeEventListener = function(eventType, eventHandle) {
                     var dom = this;
                     dom.removeEventListener(eventType, eventHandle, false);
            };
-           
+
            var detachEvent = function (eventType, eventHandle) {
                 var dom = this;
                 dom.detachEvent('on' + eventType, eventHandle);
            };
-           
+
             var proxy;
             if (dom.removeEventListener) {
                 removeEventListener.call(dom, eventType, eventHandle);
@@ -543,67 +543,67 @@
                 detachEvent.call(dom, eventType, eventHandle);
                 proxy = detachEvent;
             }
-            return help.removeEvent = proxy;           
-       }   
+            return help.removeEvent = proxy;
+       }
     };
-    
+
     var event = {
         attachEvent : function(eventName, eventHandle){
             var dom = this;
             eventMap.add(dom, eventName, eventHandle);
             help.attachEvent.call(dom, eventName, eventHandle);
         }
-       
+
        ,fireEvent : function(eventType, option) {
             var dom = this;
             event.fireEVent = help.fireEvent.call(dom, eventType, option);
        }
-       
+
       ,removeEvent : function(eventType, eventHandle) {
           var dom = this;
           if(eventType && eventHandle) {
               help.removeEvent.call(dom, eventType, eventHandle);
           } else if (eventType && !eventHandle) {
-              var eventHandles = eventMap.remove(dom, eventType) 
+              var eventHandles = eventMap.remove(dom, eventType)
               eventHandles && base.each(eventHandles, function(){
                  var activeHandle = this;
                  event.removeEvent.call(dom, eventType, activeHandle);
               });
           } else if (!eventType && !eventHandle) {
-              var eventTypes = eventMap.remove(dom) 
+              var eventTypes = eventMap.remove(dom)
               eventTypes && base.each(eventTypes, function(){
                   var activeEventType = this;
                   activeEventType && base.each(eventTypes[activeEventType], function(){
-                      var activeEventHandle = this;  
+                      var activeEventHandle = this;
                       event.removeEvent.call(dom, activeEventType, activeEventHandle);
                   });
-                  
-              });              
-          }     
+
+              });
+          }
       }
-       
+
       ,isHTMLElement : function (obj) {
             var _isHTMLElement = obj==document || obj == window;
             var testNodeName = function(target){
                 var nodeName = target.nodeName;
-                
-                return nodeName && 
+
+                return nodeName &&
                     document.createElement(nodeName).constructor === target.constructor
             };
             return _isHTMLElement || testNodeName(obj);
         }
-        
+
        ,isEventSupported : function(dom, eventType){
             if(!event.isHTMLElement(dom)){ return false}
-        	
+
             var isSupported = false;
             if(dom === window || dom === document) {
                 var ifm = document.createElement('iframe');
                 ifm.style.display='none';
                 document.body.appendChild(ifm);
-                
-                var dummyElement = dom === window ? 
-                                     ifm.contentWindow : 
+
+                var dummyElement = dom === window ?
+                                     ifm.contentWindow :
                                      ifm.contentDocument;
                 event.attachEvent.call(dummyElement, eventType, function(){
                     isSupported = true;
@@ -611,20 +611,20 @@
                 event.fireEvent.call(dummyElement, eventType);
                 ifm.parentNode.removeChild(ifm)
             } else {
-            
+
             	var elementName = dom.tagName;
             	var eventType = 'on' + eventType;
             	dom = document.createElement(elementName);
-            	
+
             	isSupported  = (eventType in dom);
-            	
+
                 if ( !isSupported ) {
                     dom.setAttribute(eventType, "return;");
                     isSupported = typeof dom[eventType] === "function";
                 }
                 dom = null;
             }
-        
+
             return isSupported;
        }
 
@@ -634,7 +634,7 @@
 }) (beacon);;;(function (beacon) {
     var base = beacon.base;
     var openAPI = {
-        
+
         /**
         * @name beacon.on
         * @class [全局事件监听及广播]
@@ -642,13 +642,13 @@
         * @param {*} option [事件句柄 或 事件处理参数]
         */
         on : (function(){
-                
+
                 var base = beacon.base;
                 var isType = base.isType;
                 var hostProxy = base.Event.hostProxy;
                 var publicDispatchEvent = base.Event.publicDispatchEvent;
                 var addEventListener = base.Event.attachEvent;
-                
+
                 var _on = function(eventName,option){
                     var args = [].slice.call(arguments,0);
                     if (option && isType(option, 'Function')) {
@@ -656,30 +656,30 @@
                         addEventListener.apply(hostProxy,args);
                     } else {
                         publicDispatchEvent.apply(hostProxy,args);
-                    }   
+                    }
                 };
-                return _on;         
+                return _on;
         }(beacon))
-        
+
         , off : (function(){
             var base = beacon.base;
             var hostProxy = base.Event.hostProxy;
             var _off = function(eventName, eventHandle){
                     var args = [].slice.call(arguments,0);
                     base.Event.removeEvent.apply(hostProxy,args);
-                    
+
                 };
                 return _off;
         }())
-        
+
         , blend:base.blend
         , NS : base.NS
         , arrayIndexOf : base.ArrayIndexOf
         , isType : base.isType
-        
+
         , Enum : base.Enum
         ,loginGlobal  : base.login
-        ,logoffGlobal : base.logoff 
+        ,logoffGlobal : base.logoff
         ,createEvent : function(){
             var args = [].slice.call(arguments,0);
             var event;
@@ -690,12 +690,12 @@
             }
             return event;
         }
-        
+
     },
-    
-    
-    
-    
+
+
+
+
     avatarAPI = {
        /**
        * @name beacon(target).on
@@ -711,32 +711,32 @@
          var args = [].slice.call(arguments,0);
          var target = this.target
             , base = beacon.base
-        
+
          var isHTMLElement = base.DOMEvent.isHTMLElement(target);
          var isEventSupported = base.DOMEvent.isEventSupported(target, eventType);
          var dispatchEvent = isHTMLElement && isEventSupported ?
                                  base.DOMEvent.fireEvent :
                                  base.Event.fireEvent;
-                                 
-         var addEventListener = isHTMLElement && isEventSupported ? 
+
+         var addEventListener = isHTMLElement && isEventSupported ?
                                     base.DOMEvent.attachEvent :
-                                    base.Event.attachEvent;    
-         
+                                    base.Event.attachEvent;
+
          if(option && base.isType(option, 'Function')){
             base.each(target,function(i,target){
-                addEventListener.apply(target, args); 
-            }); 
+                addEventListener.apply(target, args);
+            });
          } else {
              base.each(target,function(i,target){
-                dispatchEvent.apply(target, args); 
-            }); 
+                dispatchEvent.apply(target, args);
+            });
          }
-       }, 
-       
-       
-       
-       
-       
+       },
+
+
+
+
+
        /**
        * @name beacon(target).off
        * @class [具体对象 事件移除]
@@ -752,16 +752,16 @@
            var target = this.target;
            var isHTMLElement = base.DOMEvent.isHTMLElement(target);
            var isDomEvent = eventType && base.DOMEvent.isEventSupported(target, eventType);
-           
-           var removeEventListener = isHTMLElement && isDomEvent ? 
+
+           var removeEventListener = isHTMLElement && isDomEvent ?
                                          base.DOMEvent.removeEvent :
-                                            base.Event.removeEvent;  
-                                    
+                                            base.Event.removeEvent;
+
             base.each(target,function(i,target){
                 //removeEventListener.call(target, eventType, eventHandle, option);
                 isHTMLElement && base.DOMEvent.removeEvent.call(target, eventType, eventHandle, option);
                 base.Event.removeEvent.call(target, eventType, eventHandle, option);
-            }); 
+            });
        }
    };
     base.blend(base.avatarCore, avatarAPI);
