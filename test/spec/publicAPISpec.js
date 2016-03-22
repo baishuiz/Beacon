@@ -387,6 +387,35 @@ describe("Beacon", function () {
            expect(testResult).toEqual(1);
 
         });
+
+        it("循环调用", function(){
+           var testResult = 0;
+           var CUSTOM_EVENT_A = beacon.createEvent("custom event A");
+           var CUSTOM_EVENT_B = beacon.createEvent("custom event B");
+           var target = {};
+           beacon.once(CUSTOM_EVENT_A, function(){
+               testResult++;
+               beacon.on(CUSTOM_EVENT_B);
+           });
+           beacon.on(CUSTOM_EVENT_B, function(){
+               testResult++;
+               beacon.on(CUSTOM_EVENT_A);
+           })
+           expect(testResult).toEqual(0);
+
+           // 第一次触发
+           beacon.on(CUSTOM_EVENT_A);
+           expect(testResult).toEqual(2);
+
+           // 第二次触发
+           beacon.on(CUSTOM_EVENT_A);
+           expect(testResult).toEqual(2);
+
+           // 第三次全局触发
+           beacon.on(CUSTOM_EVENT_B);
+           expect(testResult).toEqual(3);
+
+        });
     });
 
 });

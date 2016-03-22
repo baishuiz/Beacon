@@ -29,10 +29,11 @@
         }(beacon))
 
         , once : function(eventName, eventHandle){
-            var handleProxy = function(){
-                 openAPI.off(eventName, eventHandle);
+            var handleProxy = function(e, data){
+                 openAPI.off(eventName, handleProxy);
+                 eventHandle.call({},e, data)
             }
-            openAPI.on(eventName, eventHandle);
+            // openAPI.on(eventName, eventHandle);
             openAPI.on(eventName, handleProxy);
         }
 
@@ -113,10 +114,15 @@
 
        once : function(eventName, eventHandle){
             var targetHost = this;
-            avatarAPI.on.call(targetHost, eventName, eventHandle);
-            avatarAPI.on.call(targetHost,eventName, function(){
-                avatarAPI.off.call(targetHost,eventName, eventHandle);
-            })
+            var eventHandleProxy = function(e, data){
+              avatarAPI.off.call(targetHost, eventName, eventHandleProxy);
+              eventHandle.call(targetHost, e, data);
+              // eventHandle = function(){};
+            }
+            avatarAPI.on.call(targetHost, eventName, eventHandleProxy);
+            // avatarAPI.on.call(targetHost,eventName, function(){
+            //     avatarAPI.off.call(targetHost,eventName, eventHandle);
+            // })
        },
 
 
