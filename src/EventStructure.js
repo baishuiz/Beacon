@@ -9,26 +9,27 @@
     var EventStructure  = function(target) {
        var arrayIndexOf = base.arrayIndexOf;
        var events = [];
-       
+
        function getEventName(event){
             var eventIndex = arrayIndexOf(events, event);
             if(eventIndex < 0){
-                eventIndex = events.push(event)-1;
+                eventIndex = events.push(event) - 1;
             }
             var eventAlias = "event_" + eventIndex;
-            var eventName = (event.toString() === event) ? event : eventAlias;
+            var isStringEvent = (event.toString() === event);
+            var eventName =  isStringEvent ? event : eventAlias;
             return eventName;
        }
-       
-       function tryGetEventName(event){
+
+       function tryGetEventName (event) {
           var eventIndex = arrayIndexOf(events, event);
-          if(eventIndex<0){
+          if (eventIndex < 0){
             return null;
           } else {
             return getEventName(event);
           }
        }
-       
+
        var api = {
            dom : target,
            target : target
@@ -37,15 +38,20 @@
               events[eventName] = events[eventName] || [];
               events[eventName].push(eventHandle);
           }
-          
+
          ,removeEvent : function (event, eventHandle) {
               var result;
               var eventName = event && getEventName(event);
               var eventHandles = eventName && events[eventName];
               // if(!eventHandles){return}
               if(event && eventHandle) {
-                  var handleIndex = arrayIndexOf(eventHandles, eventHandle);
-                  result = events[eventName].splice(handleIndex, 1);
+                  var handleIndex = eventHandles.length - 1;
+                  for( ; handleIndex >=0 ; handleIndex-- ){
+                    var activeHandle = eventHandles[handleIndex];
+                    if(activeHandle === eventHandle) {
+                      result = events[eventName].splice(handleIndex, 1);
+                    }
+                  }
               } else if(event && !eventHandle) {
                   result = events[eventName];
                   events[eventName] = [];
@@ -55,11 +61,11 @@
               }
               return result;
           }
-          
+
          ,getEventList : function(event){
              var eventName = tryGetEventName(event);
              if(eventName){
-             var result = event ? events[eventName] : events.slice(0);
+               var result = event ? events[eventName] : events.slice(0);
              }
              return result;
          }

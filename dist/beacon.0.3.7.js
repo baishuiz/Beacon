@@ -158,26 +158,27 @@
     var EventStructure  = function(target) {
        var arrayIndexOf = base.arrayIndexOf;
        var events = [];
-       
+
        function getEventName(event){
             var eventIndex = arrayIndexOf(events, event);
             if(eventIndex < 0){
-                eventIndex = events.push(event)-1;
+                eventIndex = events.push(event) - 1;
             }
             var eventAlias = "event_" + eventIndex;
-            var eventName = (event.toString() === event) ? event : eventAlias;
+            var isStringEvent = (event.toString() === event);
+            var eventName =  isStringEvent ? event : eventAlias;
             return eventName;
        }
-       
-       function tryGetEventName(event){
+
+       function tryGetEventName (event) {
           var eventIndex = arrayIndexOf(events, event);
-          if(eventIndex<0){
+          if (eventIndex < 0){
             return null;
           } else {
             return getEventName(event);
           }
        }
-       
+
        var api = {
            dom : target,
            target : target
@@ -186,15 +187,20 @@
               events[eventName] = events[eventName] || [];
               events[eventName].push(eventHandle);
           }
-          
+
          ,removeEvent : function (event, eventHandle) {
               var result;
               var eventName = event && getEventName(event);
               var eventHandles = eventName && events[eventName];
               // if(!eventHandles){return}
               if(event && eventHandle) {
-                  var handleIndex = arrayIndexOf(eventHandles, eventHandle);
-                  result = events[eventName].splice(handleIndex, 1);
+                  var handleIndex = eventHandles.length - 1;
+                  for( ; handleIndex >=0 ; handleIndex-- ){
+                    var activeHandle = eventHandles[handleIndex];
+                    if(activeHandle === eventHandle) {
+                      result = events[eventName].splice(handleIndex, 1);
+                    }
+                  }
               } else if(event && !eventHandle) {
                   result = events[eventName];
                   events[eventName] = [];
@@ -204,11 +210,11 @@
               }
               return result;
           }
-          
+
          ,getEventList : function(event){
              var eventName = tryGetEventName(event);
              if(eventName){
-             var result = event ? events[eventName] : events.slice(0);
+               var result = event ? events[eventName] : events.slice(0);
              }
              return result;
          }
@@ -217,7 +223,8 @@
     }
 
     base.EventStructure = EventStructure;
-}) (beacon);;/*
+}) (beacon);
+;/*
  * @module  EventStore
  * MIT Licensed
  * @author  baishuiz@gmail.com
@@ -226,70 +233,63 @@
     var eventList = [];
     var base = beacon.base;
     var EventStructure = base.EventStructure;
-    
+
     function createEventStructure(target) {
-        for(var i=0; i<eventList.length; i++){
-            var activeEvent = eventList[i];
-            if(activeEvent.target === target) {
-                return activeEvent
-            }
-        }        
-        
-        var structure = new EventStructure(target);
-        eventList.push(structure);
-        return structure;
+      var structure = new EventStructure(target);
+      eventList.push(structure);
+      return structure;
     }
-    
+
     function registEvent(target, eventName, eventHandle) {
-        var activeStructure = getEventList(target) || createEventStructure(target);
-        activeStructure.attachEvent(eventName, eventHandle);
+      var activeStructure = getEventList(target) || createEventStructure(target);
+      activeStructure.attachEvent(eventName, eventHandle);
     }
 
     function registCombinationEvent(target, event, eventHandle){
-        var handleProxy = event.registEvent(eventHandle);
-        var eventList = event.getEventList();
-        base.each(eventList, function(index){
-            registEvent(target, eventList[index], handleProxy);
-        });
+      var handleProxy = event.registEvent(eventHandle);
+      var eventList = event.getEventList();
+      base.each(eventList, function(index){
+        registEvent(target, eventList[index], handleProxy);
+      });
     }
-    
+
     function removeEvent(target, eventName, eventHandle) {
         var cloneEventList = eventList.slice(0)
         var structureList = target ? (getEventList(target) || []) : eventList.slice(0);
         base.each(structureList, function(index, activeStructure) {
 
-            activeStructure.removeEvent(eventName, eventHandle);     
+            activeStructure.removeEvent(eventName, eventHandle);
             if(!eventName && !eventHandle){
               var index = base.arrayIndexOf(eventList,activeStructure);
               cloneEventList.splice(index,1);
            }
         });
-        eventList = cloneEventList;        
+        eventList = cloneEventList;
     }
-    
+
     function removeCombinationEvent(target, event, eventHandle) {
         var handleProxyList = event.removeEvent(eventHandle);
         base.each(handleProxyList, function(i){
             var handleProxy = handleProxyList[i];
             var eventList = event.getEventList();
             base.each(eventList, function(index, eventName) {
-                removeEvent(target, eventName, handleProxy);    
+                removeEvent(target, eventName, handleProxy);
             });
-        });    
+        });
     }
-    
-    function getEventList(target) {
-        if(!target){
-            return eventList.slice(0);
+
+    function getEventList (target) {
+      if(!target){
+        return eventList.slice(0);
+      }
+      for(var i = 0; i < eventList.length; i++) {
+        var activeEventList = eventList[i];
+        if(activeEventList.target === target ) {
+          return  activeEventList;
         }
-        for(var i=0; i<eventList.length; i++) {
-            var activeEventList = eventList[i];
-            if(activeEventList.dom === target ) {
-                return  activeEventList;        
-            }
-        }
+      }
     }
-    
+
     var api = {
         registEvent : registEvent,
         registCombinationEvent : registCombinationEvent,
@@ -298,7 +298,8 @@
         getEventList : getEventList
     };
     base.eventStore = api;
-}) (beacon);;;(function(beacon){
+}) (beacon);
+;;(function(beacon){
     var base = beacon.base;
     function CombinationalEvent(){
         

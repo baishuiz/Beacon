@@ -86,7 +86,7 @@
        */
        on: function (eventType, option) {
          var args = [].slice.call(arguments,0);
-         var target = [].concat(this.target);
+         var target = this.target
             , base = beacon.base
 
          var isHTMLElement = base.DOMEvent.isHTMLElement(target);
