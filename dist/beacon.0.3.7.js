@@ -212,9 +212,11 @@
           }
 
          ,getEventList : function(event){
+             var result;
+             if(!event){return events.slice(0)}
              var eventName = tryGetEventName(event);
              if(eventName){
-               var result = event ? events[eventName] : events.slice(0);
+               result = event ? events[eventName] : events.slice(0);
              }
              return result;
          }
@@ -234,7 +236,7 @@
     var base = beacon.base;
     var EventStructure = base.EventStructure;
 
-    function createEventStructure(target) {
+    function createEventStructure (target) {
       var structure = new EventStructure(target);
       eventList.push(structure);
       return structure;
@@ -259,8 +261,8 @@
         base.each(structureList, function(index, activeStructure) {
 
             activeStructure.removeEvent(eventName, eventHandle);
-            if(!eventName && !eventHandle){
-              var index = base.arrayIndexOf(eventList,activeStructure);
+            if(!eventName && !eventHandle || activeStructure.getEventList().length == 0){
+              var index = base.arrayIndexOf(eventList, activeStructure);
               cloneEventList.splice(index,1);
            }
         });
@@ -394,7 +396,7 @@
             isActionEvent && actionEvent(target, eventHandle);
             var eventList = ['touchmove', 'mousemove'];
 
-            base.each(eventList,function(i, activeEvent){
+            base.each(eventList, function(i, activeEvent){
               isActionEvent && window.beacon(document).on(activeEvent, function(e){
                 event.publicDispatchEvent(eventName, e);
               });

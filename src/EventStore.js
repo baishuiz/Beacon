@@ -8,7 +8,7 @@
     var base = beacon.base;
     var EventStructure = base.EventStructure;
 
-    function createEventStructure(target) {
+    function createEventStructure (target) {
       var structure = new EventStructure(target);
       eventList.push(structure);
       return structure;
@@ -33,9 +33,9 @@
         base.each(structureList, function(index, activeStructure) {
 
             activeStructure.removeEvent(eventName, eventHandle);
-            if(!eventName && !eventHandle){
-              var index = base.arrayIndexOf(eventList,activeStructure);
-              cloneEventList.splice(index,1);
+            if(!eventName && !eventHandle || activeStructure.getEventList().length == 0){
+              var index = base.arrayIndexOf(eventList, activeStructure);
+              cloneEventList.splice(index, 1);
            }
         });
         eventList = cloneEventList;

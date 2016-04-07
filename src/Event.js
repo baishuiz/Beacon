@@ -22,7 +22,7 @@
             isActionEvent && actionEvent(target, eventHandle);
             var eventList = ['touchmove', 'mousemove'];
 
-            base.each(eventList,function(i, activeEvent){
+            base.each(eventList, function(i, activeEvent){
               isActionEvent && window.beacon(document).on(activeEvent, function(e){
                 event.publicDispatchEvent(eventName, e);
               });

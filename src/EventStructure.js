@@ -63,9 +63,11 @@
           }
 
          ,getEventList : function(event){
+             var result;
+             if(!event){return events.slice(0)}
              var eventName = tryGetEventName(event);
              if(eventName){
-               var result = event ? events[eventName] : events.slice(0);
+               result = event ? events[eventName] : events.slice(0);
              }
              return result;
          }
