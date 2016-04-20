@@ -13,9 +13,18 @@
         structures : []
        ,getStructure : function(dom) {
            var activeStructure;
+           var isTarget;
            for(var i = 0; i < eventMap.structures.length; i++) {
                activeStructure = eventMap.structures[i];
-               if (activeStructure.dom === dom) {
+
+               try{
+                 isTarget = (activeStructure.dom === dom);
+               }catch(err){
+                 activeStructure.dom = window.document;
+                 isTarget = (activeStructure.dom === dom);
+               }
+
+               if (isTarget) {
                    return activeStructure;
                }
            }
