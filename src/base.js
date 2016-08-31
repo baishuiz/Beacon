@@ -8,7 +8,7 @@
         * @param  {Object} mainObj [merge对象到mainObj上]
         * @param  {Object} p1,p2,p3... [支持一次merge多个对象，从第二个参数开始]
         * @return {Object}         [返回merge之后的对象]
-        * @example 
+        * @example
         * NEG.base.merge({x:1,y:1},{z:1},{a:1})
         * 结果：返回 {x:1,y:1,z:1,a:1}
         */
@@ -22,16 +22,24 @@
             }
             return mainObj;
         },
-        
-        
-        // options : --cover , --mergePrototype
+
+
+        // options : --cover , --mergePrototype, --reset
         blend : function(mainObj,attrSource,options) {
             var _options = {
                 cover:true,
-                mergePrototype:false
+                mergePrototype:false,
+                reset : false
             };
             options = options ? _base.merge(_options,options): _options;
             attrSource = [].concat(attrSource);
+            if(options.reset){
+              for(var oitem in mainObj){
+                if(!attrSource[oitem]){
+                  attrSource[oitem] = undefined;
+                }
+              }
+            }
             var sourceLength = attrSource.length ;
             for (var index = 0; index < sourceLength; index++) {
                 var sourceObj = attrSource[index];
@@ -40,28 +48,28 @@
                     var rule2 = options.cover || !mainObj[item];
                     if(rule1 && rule2) {
                          mainObj[item] = sourceObj[item];
-                    } 
+                    }
                 }
             }
-            return mainObj;            
-            
+            return mainObj;
+
         },
-        
-        
-        
-        
+
+
+
+
        isType : function(obj,type){
             //return Object.toString.call(obj).indexOf('[object ' + type) == 0 || !!(obj instanceof Number);
             return (type === "Null" && obj === null) ||
                 (type === "Undefined" && obj === void 0 ) ||
                 (type === "Number" && isFinite(obj)) ||
                  Object.prototype.toString.call(obj).slice(8,-1) === type;
-        },        
-        
-        
-        
-        
-        
+        },
+
+
+
+
+
         /**
         * @name beacon.base.ArrayIndexOf
         * @class [返回对象存在数组的index,不存在返回-1]
@@ -74,7 +82,7 @@
         */
         //ToDO：改为两分法快速查找
         arrayIndexOf: function(array, el) {
-            _base.arrayIndexOf = Array.prototype.indexOf ? 
+            _base.arrayIndexOf = Array.prototype.indexOf ?
                         function(array, el){
                             array = [].slice.call(array,0);
                             return array.indexOf(el);
@@ -90,10 +98,10 @@
                         };
             return _base.arrayIndexOf(array, el);
         },
-         
 
-       
-       
+
+
+
        //ToDO： 增加一个可选参数进行深度each
        each : function(array,fn){
             if(!array) return;

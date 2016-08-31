@@ -51,7 +51,7 @@
         * @param  {Object} mainObj [merge对象到mainObj上]
         * @param  {Object} p1,p2,p3... [支持一次merge多个对象，从第二个参数开始]
         * @return {Object}         [返回merge之后的对象]
-        * @example 
+        * @example
         * NEG.base.merge({x:1,y:1},{z:1},{a:1})
         * 结果：返回 {x:1,y:1,z:1,a:1}
         */
@@ -65,16 +65,24 @@
             }
             return mainObj;
         },
-        
-        
-        // options : --cover , --mergePrototype
+
+
+        // options : --cover , --mergePrototype, --reset
         blend : function(mainObj,attrSource,options) {
             var _options = {
                 cover:true,
-                mergePrototype:false
+                mergePrototype:false,
+                reset : false
             };
             options = options ? _base.merge(_options,options): _options;
             attrSource = [].concat(attrSource);
+            if(options.reset){
+              for(var oitem in mainObj){
+                if(!attrSource[oitem]){
+                  attrSource[oitem] = undefined;
+                }
+              }
+            }
             var sourceLength = attrSource.length ;
             for (var index = 0; index < sourceLength; index++) {
                 var sourceObj = attrSource[index];
@@ -83,28 +91,28 @@
                     var rule2 = options.cover || !mainObj[item];
                     if(rule1 && rule2) {
                          mainObj[item] = sourceObj[item];
-                    } 
+                    }
                 }
             }
-            return mainObj;            
-            
+            return mainObj;
+
         },
-        
-        
-        
-        
+
+
+
+
        isType : function(obj,type){
             //return Object.toString.call(obj).indexOf('[object ' + type) == 0 || !!(obj instanceof Number);
             return (type === "Null" && obj === null) ||
                 (type === "Undefined" && obj === void 0 ) ||
                 (type === "Number" && isFinite(obj)) ||
                  Object.prototype.toString.call(obj).slice(8,-1) === type;
-        },        
-        
-        
-        
-        
-        
+        },
+
+
+
+
+
         /**
         * @name beacon.base.ArrayIndexOf
         * @class [返回对象存在数组的index,不存在返回-1]
@@ -117,7 +125,7 @@
         */
         //ToDO：改为两分法快速查找
         arrayIndexOf: function(array, el) {
-            _base.arrayIndexOf = Array.prototype.indexOf ? 
+            _base.arrayIndexOf = Array.prototype.indexOf ?
                         function(array, el){
                             array = [].slice.call(array,0);
                             return array.indexOf(el);
@@ -133,21 +141,22 @@
                         };
             return _base.arrayIndexOf(array, el);
         },
-         
 
-       
-       
+
+
+
        //ToDO： 增加一个可选参数进行深度each
        each : function(array,fn){
             if(!array) return;
             array = [].concat(array);
-            for (var i = array.length - 1; i >= 0; i--) {
+            for (var i = 0; i < array.length; i++) {
                 fn.call(array[i],i,array[i]);
             }
         }
     };
     _base.blend(base, _base);
-})(beacon);;/*
+})(beacon);
+;/*
  * @module  EventStructure
  * MIT Licensed
  * @author  baishuiz@gmail.com
@@ -158,17 +167,27 @@
     var EventStructure  = function(target) {
        var arrayIndexOf = base.arrayIndexOf;
        var events = [];
-       
+
        function getEventName(event){
             var eventIndex = arrayIndexOf(events, event);
             if(eventIndex < 0){
-                eventIndex = events.push(event)-1;
+                eventIndex = events.push(event) - 1;
             }
             var eventAlias = "event_" + eventIndex;
-            var eventName = (event.toString() === event) ? event : eventAlias;
+            var isStringEvent = (event.toString() === event);
+            var eventName =  isStringEvent ? event : eventAlias;
             return eventName;
        }
-       
+
+       function tryGetEventName (event) {
+          var eventIndex = arrayIndexOf(events, event);
+          if (eventIndex < 0){
+            return null;
+          } else {
+            return getEventName(event);
+          }
+       }
+
        var api = {
            dom : target,
            target : target
@@ -177,14 +196,20 @@
               events[eventName] = events[eventName] || [];
               events[eventName].push(eventHandle);
           }
-          
+
          ,removeEvent : function (event, eventHandle) {
               var result;
               var eventName = event && getEventName(event);
               var eventHandles = eventName && events[eventName];
+              // if(!eventHandles){return}
               if(event && eventHandle) {
-                  var handleIndex = arrayIndexOf(eventHandles, eventHandle);
-                  result = events[eventName].splice(handleIndex, 1);
+                  var handleIndex = eventHandles.length - 1;
+                  for( ; handleIndex >=0 ; handleIndex-- ){
+                    var activeHandle = eventHandles[handleIndex];
+                    if(activeHandle === eventHandle) {
+                      result = events[eventName].splice(handleIndex, 1);
+                    }
+                  }
               } else if(event && !eventHandle) {
                   result = events[eventName];
                   events[eventName] = [];
@@ -194,10 +219,14 @@
               }
               return result;
           }
-          
+
          ,getEventList : function(event){
-             var eventName = getEventName(event);
-             var result = event ? events[eventName] : events.slice(0);
+             var result;
+             if(!event){return events.slice(0)}
+             var eventName = tryGetEventName(event);
+             if(eventName){
+               result = event ? events[eventName] : events.slice(0);
+             }
              return result;
          }
        }
@@ -205,7 +234,8 @@
     }
 
     base.EventStructure = EventStructure;
-}) (beacon);;/*
+}) (beacon);
+;/*
  * @module  EventStore
  * MIT Licensed
  * @author  baishuiz@gmail.com
@@ -214,56 +244,63 @@
     var eventList = [];
     var base = beacon.base;
     var EventStructure = base.EventStructure;
-    
-    function createEventStructure(target) {
-        var structure = new EventStructure(target);
-        eventList.push(structure);
-        return structure;
+
+    function createEventStructure (target) {
+      var structure = new EventStructure(target);
+      eventList.push(structure);
+      return structure;
     }
-    
+
     function registEvent(target, eventName, eventHandle) {
-        var activeStructure = getEventList(target) || createEventStructure(target);
-        activeStructure.attachEvent(eventName, eventHandle);
+      var activeStructure = getEventList(target) || createEventStructure(target);
+      activeStructure.attachEvent(eventName, eventHandle);
     }
 
     function registCombinationEvent(target, event, eventHandle){
-        var handleProxy = event.registEvent(eventHandle);
-        var eventList = event.getEventList();
-        base.each(eventList, function(index){
-            registEvent(target, eventList[index], handleProxy);
-        });
+      var handleProxy = event.registEvent(eventHandle);
+      var eventList = event.getEventList();
+      base.each(eventList, function(index){
+        registEvent(target, eventList[index], handleProxy);
+      });
     }
-    
+
     function removeEvent(target, eventName, eventHandle) {
-        var structureList = target ? (getEventList(target) || []) : eventList;
+        var cloneEventList = eventList.slice(0)
+        var structureList = target ? (getEventList(target) || []) : eventList.slice(0);
         base.each(structureList, function(index, activeStructure) {
-            activeStructure.removeEvent(eventName, eventHandle);     
+
+            activeStructure.removeEvent(eventName, eventHandle);
+            if(!eventName && !eventHandle || activeStructure.getEventList().length == 0){
+              var index = base.arrayIndexOf(eventList, activeStructure);
+              cloneEventList.splice(index, 1);
+           }
         });
+        eventList = cloneEventList;
     }
-    
+
     function removeCombinationEvent(target, event, eventHandle) {
         var handleProxyList = event.removeEvent(eventHandle);
         base.each(handleProxyList, function(i){
             var handleProxy = handleProxyList[i];
             var eventList = event.getEventList();
             base.each(eventList, function(index, eventName) {
-                removeEvent(target, eventName, handleProxy);    
+                removeEvent(target, eventName, handleProxy);
             });
-        });    
+        });
     }
-    
-    function getEventList(target) {
-        if(!target){
-            return eventList.slice(0);
+
+    function getEventList (target) {
+      if(!target){
+        return eventList.slice(0);
+      }
+      for(var i = 0; i < eventList.length; i++) {
+        var activeEventList = eventList[i];
+        if(activeEventList.target === target ) {
+          return  activeEventList;
         }
-        for(var i=0; i<eventList.length; i++) {
-            var activeEventList = eventList[i];
-            if(activeEventList.dom === target ) {
-                return  activeEventList;        
-            }
-        }
+      }
     }
-    
+
     var api = {
         registEvent : registEvent,
         registCombinationEvent : registCombinationEvent,
@@ -272,7 +309,8 @@
         getEventList : getEventList
     };
     base.eventStore = api;
-}) (beacon);;;(function(beacon){
+}) (beacon);
+;;(function(beacon){
     var base = beacon.base;
     function CombinationalEvent(){
         
@@ -361,11 +399,13 @@
     var event = {
        hostProxy : {}
 
-       ,attachActionEvent : function(eventName) {
+       ,attachActionEvent : function(eventName, target, eventHandle) {
+            var actionEvent = eventName.desc;
             var isActionEvent = base.isType(eventName.desc, 'Function');
+            isActionEvent && actionEvent(target, eventHandle);
             var eventList = ['touchmove', 'mousemove'];
 
-            base.each(eventList,function(i, activeEvent){
+            base.each(eventList, function(i, activeEvent){
               isActionEvent && window.beacon(document).on(activeEvent, function(e){
                 event.publicDispatchEvent(eventName, e);
               });
@@ -379,13 +419,14 @@
                            ? registCombinationEvent
                            : registEvent;
 
-            event.attachActionEvent(eventName);
+            event.attachActionEvent(eventName, target, eventHandle);
             regEvent(target, eventName, eventHandle);
         }
 
        ,fireEvent : function(eventName, eventBody){
             var target        = this;
             var eventList     = getEventList(target);
+            if(!eventList) {return}
             var eventHandles  = eventList.getEventList(eventName);
             var isActionEvent = base.isType(eventName.desc, 'Function');
             var actioniResult = isActionEvent && eventName.desc(eventBody);
@@ -439,52 +480,61 @@
 ;(function (beacon) {
     var base = beacon.base;
     var host = (function(){return this}());
-    
+
     var EventStructure  = base.EventStructure;
 
     var eventMap = {
         structures : []
        ,getStructure : function(dom) {
            var activeStructure;
+           var isTarget;
            for(var i = 0; i < eventMap.structures.length; i++) {
                activeStructure = eventMap.structures[i];
-               if (activeStructure.dom === dom) {
+
+               try{
+                 isTarget = (activeStructure.dom === dom);
+               }catch(err){
+                 activeStructure.dom = window.document;
+                 isTarget = (activeStructure.dom === dom);
+               }
+
+               if (isTarget) {
                    return activeStructure;
                }
            }
        }
-       
+
        ,add : function (dom, eventName, eventHandle) {
            var activeStructure = eventMap.getStructure(dom);
            if(!activeStructure) {
              activeStructure = new EventStructure(dom);
              eventMap.structures.push(activeStructure);
-           } 
+           }
            activeStructure.attachEvent(eventName, eventHandle);
-           
+
        }
-       
+
       ,remove : function (dom, eventName, eventHandle) {
           var activeStructure = eventMap.getStructure(dom);
-          return activeStructure.removeEvent(eventName, eventHandle);
+          return activeStructure && activeStructure.removeEvent(eventName, eventHandle);
       }
     }
-    
-    
+
+
     var help = {
         attachEvent : function (eventName, eventHandle) {
             var dom = this;
-            
+
             var addEventListener = function (eventName, eventHandle) {
                 var dom = this;
                 dom.addEventListener(eventName, eventHandle, false);
             };
-            
+
             var attachEvent = function(eventName, eventHandle){
                 var dom = this;
                 dom.attachEvent("on" + eventName, eventHandle);
             };
-            
+
             var otherFn = function(eventName, eventHandle) {
                 var dom = this;
                 var oldHandle = dom["on" + eventName];
@@ -493,7 +543,7 @@
                     eventHandle.call(dom);
                 };
             };
-            
+
             var proxy;
             if (host.addEventListener) {
                 addEventListener.call(dom, eventName, eventHandle);
@@ -507,7 +557,7 @@
             }
             return help.attachEvent = proxy;
         }
-       
+
        ,fireEvent   : function (eventType, option) {
             var dom = this;
             var dispatchEvent = function(eventType, option) {
@@ -515,24 +565,25 @@
                     option = option || {bubbles:true,cancelable:true};
                     option.ieHack = dom.all && dom.all.toString(); // 规避 IE 异常，当 dom 不在DOM树时，IE9下 fireEVent会抛出异常；此处采用赋值操作以避免js压缩时清除冗余语句；
                     option.ieHack = dom.style; // 规避 IE 异常，当 dom 不在DOM树时，IE9下 fireEVent 不会触发事件；此处采用赋值操作以避免js压缩时清除冗余语句；
-                
+
                     var evt = document.createEvent("Event");
                     evt.initEvent(eventType, option.bubbles, option.cancelable);
+                    if(option.state){evt.state = option.state}
                     dom.dispatchEvent(evt);
            };
-           
+
            var fireEvent = function (eventType, option) {
                 var dom = this;
                 option = option || {bubbles:true, cancelable:true};
                 option.ieHack = dom.all && dom.all.toString(); // 规避 IE 异常，当 dom 不在DOM树时，IE7下 fireEVent会抛出异常；此处采用赋值操作以避免js压缩时清除冗余语句；
                 option.ieHack = dom.style; // 规避 IE 异常，当 dom 不在DOM树时，IE8下 fireEVent 不会触发事件；此处采用赋值操作以避免js压缩时清除冗余语句；
-                
+
                 eventType = 'on' + eventType;
                 var evt = document.createEventObject();
                 evt.cancelBubble = option.cancelable;
                 dom.fireEvent(eventType, evt);
            };
-           
+
             var proxy;
             if (document.createEvent && dom.dispatchEvent) {
                 dispatchEvent.call(dom, eventType, option);
@@ -543,19 +594,19 @@
             }
             return proxy;
        }
-        
+
        ,removeEvent : function (eventType, eventHandle) {
             var dom = this;
             var removeEventListener = function(eventType, eventHandle) {
                     var dom = this;
                     dom.removeEventListener(eventType, eventHandle, false);
            };
-           
+
            var detachEvent = function (eventType, eventHandle) {
                 var dom = this;
                 dom.detachEvent('on' + eventType, eventHandle);
            };
-           
+
             var proxy;
             if (dom.removeEventListener) {
                 removeEventListener.call(dom, eventType, eventHandle);
@@ -564,67 +615,76 @@
                 detachEvent.call(dom, eventType, eventHandle);
                 proxy = detachEvent;
             }
-            return help.removeEvent = proxy;           
-       }   
+            return help.removeEvent = proxy;
+       }
     };
-    
+
     var event = {
         attachEvent : function(eventName, eventHandle){
             var dom = this;
             eventMap.add(dom, eventName, eventHandle);
             help.attachEvent.call(dom, eventName, eventHandle);
         }
-       
+
        ,fireEvent : function(eventType, option) {
             var dom = this;
             event.fireEVent = help.fireEvent.call(dom, eventType, option);
        }
-       
+
       ,removeEvent : function(eventType, eventHandle) {
           var dom = this;
           if(eventType && eventHandle) {
               help.removeEvent.call(dom, eventType, eventHandle);
           } else if (eventType && !eventHandle) {
-              var eventHandles = eventMap.remove(dom, eventType) 
+              var eventHandles = eventMap.remove(dom, eventType)
               eventHandles && base.each(eventHandles, function(){
                  var activeHandle = this;
                  event.removeEvent.call(dom, eventType, activeHandle);
               });
           } else if (!eventType && !eventHandle) {
-              var eventTypes = eventMap.remove(dom) 
+              var eventTypes = eventMap.remove(dom)
               eventTypes && base.each(eventTypes, function(){
                   var activeEventType = this;
                   activeEventType && base.each(eventTypes[activeEventType], function(){
-                      var activeEventHandle = this;  
+                      var activeEventHandle = this;
                       event.removeEvent.call(dom, activeEventType, activeEventHandle);
                   });
-                  
-              });              
-          }     
+
+              });
+          }
       }
-       
+
       ,isHTMLElement : function (obj) {
             var _isHTMLElement = obj==document || obj == window;
             var testNodeName = function(target){
                 var nodeName = target && target.nodeName;
-                
-                return nodeName && 
-                    document.createElement(nodeName).constructor === target.constructor
+
+                return nodeName && target.nodeType;
+                // return nodeName &&
+                //     document.createElement(nodeName).constructor === target.constructor
             };
             return _isHTMLElement || testNodeName(obj);
         }
-        
+
        ,isEventSupported : function(dom, eventType){
-            if(!event.isHTMLElement(dom)){ return false}
-        	
+            if(!event.isHTMLElement(dom) || !base.isType(eventType, 'String')){ return false}
+
             var isSupported = false;
             if(dom === window || dom === document) {
+                isSupported = "on"+eventType in dom;
+                 var isIE = !!window.ActiveXObject;
+                 var isIE8 = isIE && !!document.documentMode;
+                if(!isSupported && isIE8){
+                    return false
+                } else if(isSupported) {
+                  return true
+                }
                 var ifm = document.createElement('iframe');
                 ifm.style.display='none';
                 document.body.appendChild(ifm);
-                
-                var dummyElement = dom === window ? 
-                                     ifm.contentWindow : 
+
+                var dummyElement = dom === window ?
+                                     ifm.contentWindow :
                                      ifm.contentDocument;
                 event.attachEvent.call(dummyElement, eventType, function(){
                     isSupported = true;
@@ -632,27 +692,28 @@
                 event.fireEvent.call(dummyElement, eventType);
                 ifm.parentNode.removeChild(ifm)
             } else {
-            
+
             	var elementName = dom.tagName;
             	var eventType = 'on' + eventType;
             	dom = document.createElement(elementName);
-            	
+
             	isSupported  = (eventType in dom);
-            	
+
                 if ( !isSupported ) {
                     dom.setAttribute(eventType, "return;");
                     isSupported = typeof dom[eventType] === "function";
                 }
                 dom = null;
             }
-        
+
             return isSupported;
        }
 
     };
 
     base.DOMEvent = event;
-}) (beacon);;;(function (beacon) {
+}) (beacon);
+;;(function (beacon) {
     var base = beacon.base;
     var openAPI = {
 
@@ -683,10 +744,11 @@
         }(beacon))
 
         , once : function(eventName, eventHandle){
-            var handleProxy = function(){
-                 openAPI.off(eventName, eventHandle);
+            var handleProxy = function(e, data){
+                 openAPI.off(eventName, handleProxy);
+                 eventHandle.call({},e, data)
             }
-            openAPI.on(eventName, eventHandle);
+            // openAPI.on(eventName, eventHandle);
             openAPI.on(eventName, handleProxy);
         }
 
@@ -767,10 +829,15 @@
 
        once : function(eventName, eventHandle){
             var targetHost = this;
-            avatarAPI.on.call(targetHost, eventName, eventHandle);
-            avatarAPI.on.call(targetHost,eventName, function(){
-                avatarAPI.off.call(targetHost,eventName, eventHandle);
-            })
+            var eventHandleProxy = function(e, data){
+              avatarAPI.off.call(targetHost, eventName, eventHandleProxy);
+              eventHandle.call(targetHost, e, data);
+              // eventHandle = function(){};
+            }
+            avatarAPI.on.call(targetHost, eventName, eventHandleProxy);
+            // avatarAPI.on.call(targetHost,eventName, function(){
+            //     avatarAPI.off.call(targetHost,eventName, eventHandle);
+            // })
        },
 
 
@@ -795,9 +862,10 @@
                                             base.Event.removeEvent;
 
             base.each(target,function(i,target){
+                var isDomEvent = eventType && base.DOMEvent.isEventSupported(target, eventType);
                 //removeEventListener.call(target, eventType, eventHandle, option);
                 isHTMLElement && base.DOMEvent.removeEvent.call(target, eventType, eventHandle, option);
-                base.Event.removeEvent.call(target, eventType, eventHandle, option);
+                isDomEvent || base.Event.removeEvent.call(target, eventType, eventHandle, option);
             });
        }
    };
