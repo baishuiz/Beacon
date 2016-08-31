@@ -35,7 +35,7 @@
             attrSource = [].concat(attrSource);
             if(options.reset){
               for(var oitem in mainObj){
-                if(!attrSource[oitem]){
+                if(!attrSource[0][oitem]){
                   attrSource[0][oitem] = undefined;
                 }
               }
