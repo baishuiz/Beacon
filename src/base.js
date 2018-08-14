@@ -17,7 +17,9 @@
             for (var index = 1; index < argLength; index++) {
                 var sourceObj = arguments[index];
                 for (var item in sourceObj) {
-                    mainObj[item] = sourceObj[item];
+                    if(mainObj[item] !== sourceObj[item]){
+                        mainObj[item] = sourceObj[item];
+                    }
                 }
             }
             return mainObj;
